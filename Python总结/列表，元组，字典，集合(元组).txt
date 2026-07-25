@@ -1,0 +1,34 @@
+2.元组：Python 的元组与列表类似，不同之处在于元组的元素不能修改。元组使用小括号 ( )，列表使用方括号 [ ]。
+		a.创建空元组：tup1 = ()
+
+		b.元组中只包含一个元素时，需要在元素后面添加逗号 , ，否则括号会被当作运算符使用
+			例如：	>>> tup1 = (50)
+					>>> type(tup1)     # 不加逗号，类型为整型
+					<class 'int'>
+
+					>>> tup1 = (50,)
+					>>> type(tup1)     # 加上逗号，类型为元组
+					<class 'tuple'>
+
+		c.删除元组
+			例如		tup = ('Google', 'Runoob', 1997, 2000)
+ 
+					print (tup)
+					del tup
+					print ("删除后的元组 tup : ")
+					print (tup)			#元组被删除后，输出变量会有异常信息
+
+		d.元组运算符
+			复制:('Hi!',) * 4-------->('Hi!', 'Hi!', 'Hi!', 'Hi!')
+			迭代:for x in (1, 2, 3): 
+				 print (x, end=" ")
+				-------->1 2 3
+
+		e.元组的内置函数
+			len(tuple),max(tuple),min(tuple)
+			tuple(iterable)：将可迭代系列转换为元组。	
+			例如:
+				>>> list1= ['Google', 'Taobao', 'Runoob', 'Baidu']
+				>>> tuple1=tuple(list1)
+				>>> tuple1
+				--------->('Google', 'Taobao', 'Runoob', 'Baidu')

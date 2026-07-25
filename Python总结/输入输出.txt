@@ -1,0 +1,314 @@
+Python3 输入和输出总结：知识点、代码和输出
+这篇教程主要介绍 Python3 中的输入、输出、格式化显示、文件读写和对象序列化。下面按知识点整理，并为每个知识点配上示例代码和输出结果。
+
+一、使用 print() 输出内容
+	知识点：
+		print() 是 Python 中最常用的输出函数，可以把字符串、数字、变量等内容显示到屏幕上。
+	代码：
+		print("Hello, Python!")
+		name = "小明"
+		age = 18
+		print(name, age)
+	输出：
+		Hello, Python!
+		小明 18
+
+二、str() 和 repr() 的区别
+	知识点：
+		str() 更适合给用户阅读，显示结果更自然。
+		repr() 更适合给解释器或开发者查看，会保留更多原始信息，例如转义字符。
+	代码：
+		s = "Hello\nPython"
+		print(str(s))
+		print(repr(s))
+	输出：
+		Hello
+		Python
+		'Hello\nPython'
+
+三、字符串右对齐 rjust()
+	知识点：
+		rjust(width) 会让字符串在指定宽度内右对齐，左侧自动补空格。
+	代码：
+		for x in range(1, 4):
+			print(str(x).rjust(3), str(x * x).rjust(3))
+	输出：
+		  1   1
+		  2   4
+		  3   9
+
+四、字符串左对齐 ljust()
+	知识点：
+		ljust(width) 会让字符串在指定宽度内左对齐，右侧自动补空格。
+	代码：
+		print("Name".ljust(10), "Age")
+		print("Tom".ljust(10), 20)
+		print("Alice".ljust(10), 19)
+	输出：
+		Name       Age
+		Tom        20
+		Alice      19
+
+五、字符串居中 center()
+	知识点：
+		center(width) 会让字符串在指定宽度内居中显示。
+	代码：
+		print("Python".center(12))
+		print("IO".center(12))
+	输出：
+		   Python   
+		     IO     
+
+六、数字字符串补零 zfill()
+	知识点：
+		zfill(width) 会在字符串左侧补 0，常用于编号、序号等场景。
+	代码：
+		print("7".zfill(3))
+		print("42".zfill(5))
+		print("-3".zfill(4))
+	输出：
+		007
+		00042
+		-003
+
+七、使用 str.format() 按位置格式化
+	知识点：
+		str.format() 使用大括号 {} 作为占位符，可以按参数位置插入内容。
+	代码：
+		print("{} 喜欢 {}".format("小明", "Python"))
+		print("{0} 和 {1} 都在学习 {2}".format("小明", "小红", "Python"))
+	输出：
+		小明 喜欢 Python
+		小明 和 小红 都在学习 Python
+
+八、使用 str.format() 按关键字格式化
+	知识点：
+		format() 可以通过关键字参数把内容填入指定占位符。
+	代码：
+		print("{name} 今年 {age} 岁".format(name="小明", age=18))
+	输出：
+		小明 今年 18 岁
+
+九、控制小数位数
+	知识点：
+		可以在 format() 中指定数字格式，例如 {:.3f} 表示保留三位小数。
+	代码：
+		pi = 3.1415926
+		print("{:.3f}".format(pi))
+		print("{:.2f}".format(pi))
+	输出：
+		3.142
+		3.14
+
+十、控制输出宽度和对齐
+	知识点：
+		format() 也可以控制宽度和对齐方式。< 表示左对齐，> 表示右对齐，^ 表示居中。
+	代码：
+		print("{:<8} {:>5}".format("Name", "Score"))
+		print("{:<8} {:>5}".format("Tom", 95))
+		print("{:<8} {:>5}".format("Alice", 100))
+	输出：
+        Name      Score
+		Tom         95
+		Alice      100
+
+十一、旧式百分号格式化
+	知识点：
+		Python 也支持使用 % 进行字符串格式化。%s 表示字符串，%d 表示整数，%.2f 表示保留两位小数。
+	代码：
+		name = "小明"
+		score = 92.5
+		print("%s 的成绩是 %.1f" % (name, score))
+	输出：
+		小明 的成绩是 92.5
+
+十二、使用 input() 获取键盘输入
+	知识点：
+		input() 用来从键盘读取用户输入，返回值永远是字符串。
+	代码：
+		name = input("请输入你的名字：")
+		print("你好，" + name)
+	示例输入：
+		小明
+	输出：
+		请输入你的名字：小明
+		你好，小明
+
+十三、input() 返回字符串，需要类型转换
+	知识点：
+		如果要把 input() 得到的内容用于数学计算，需要使用 int() 或 float() 转换类型。
+	代码：
+		a = input("请输入第一个数字：")
+		b = input("请输入第二个数字：")
+		print(int(a) + int(b))
+	示例输入：
+		3
+		5
+	输出：
+		请输入第一个数字：3
+		请输入第二个数字：5
+		8
+
+十四、使用 open() 打开文件
+	知识点：
+		open(filename, mode) 用于打开文件。r 表示只读，w 表示写入，a 表示追加，r+ 表示读写，b 表示二进制模式。
+	代码：
+		f = open("demo.txt", "w", encoding="utf-8")
+		f.write("Hello Python")
+		f.close()
+	输出：
+		程序不会在屏幕上输出内容，但会创建 demo.txt 文件，并写入：
+		Hello Python
+
+十五、write() 写入文件
+	知识点：
+		write() 用于向文件写入字符串，并返回写入的字符数。
+	代码：
+		f = open("demo.txt", "w", encoding="utf-8")
+		n = f.write("Python 文件写入")
+		f.close()
+		print(n)
+	输出：
+		9
+	说明：
+		这里输出 9，是因为字符串 "Python 文件写入" 一共有 9 个字符。
+
+十六、read() 读取文件全部内容
+	知识点：
+		read() 可以读取文件内容。如果不传参数，会读取全部内容。
+	代码：
+		f = open("demo.txt", "r", encoding="utf-8")
+		content = f.read()
+		f.close()
+		print(content)
+	假设 demo.txt 内容是：
+		Python 文件写入
+	输出：
+		Python 文件写入
+
+十七、readline() 读取一行
+	知识点：
+		readline() 每次读取文件中的一行。
+	代码：
+		f = open("demo.txt", "r", encoding="utf-8")
+		print(f.readline(), end="")
+		print(f.readline(), end="")
+		f.close()
+	假设 demo.txt 内容是：
+		第一行
+		第二行
+		第三行
+	输出：
+		第一行
+		第二行
+
+十八、readlines() 读取所有行
+	知识点：
+		readlines() 会读取所有行，并返回一个列表。
+	代码：
+		f = open("demo.txt", "r", encoding="utf-8")
+		lines = f.readlines()
+		f.close()
+		print(lines)
+	假设 demo.txt 内容是：
+		第一行
+		第二行
+	输出：
+		['第一行\n', '第二行\n']
+
+十九、直接遍历文件对象
+	知识点：
+		文件对象可以直接用 for 循环遍历，这是一种常见且简洁的逐行读取方式。
+	代码：
+		f = open("demo.txt", "r", encoding="utf-8")
+		for line in f:
+			print(line, end="")
+		f.close()
+	假设 demo.txt 内容是：
+		第一行
+		第二行
+	输出：
+		第一行
+		第二行
+
+二十、tell() 查看文件指针位置
+	知识点：
+		tell() 返回当前文件指针的位置。
+	代码：
+		f = open("demo.txt", "rb")
+		print(f.read(5))
+		print(f.tell())
+		f.close()
+	假设 demo.txt 内容是：
+		Hello Python
+	输出：
+		b'Hello'
+		5
+
+二十一、seek() 移动文件指针
+	知识点：
+		seek(offset) 可以移动文件指针到指定位置，然后再进行读取。
+	代码：
+		f = open("demo.txt", "rb")
+		f.seek(6)
+		print(f.read())
+		f.close()
+	假设 demo.txt 内容是：
+		Hello Python
+	输出：
+		b'Python'
+
+二十二、使用 with open() 自动关闭文件
+	知识点：
+		with open(...) as f 可以在代码块结束后自动关闭文件，比手动 close() 更安全、简洁。
+	代码：
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.write("使用 with 写文件")
+
+		with open("demo.txt", "r", encoding="utf-8") as f:
+			print(f.read())
+	输出：
+		使用 with 写文件
+
+二十三、使用 pickle 保存 Python 对象
+	知识点：
+		pickle 可以把 Python 对象序列化保存到文件中。pickle.dump(obj, file) 用于保存对象。
+	代码：
+		import pickle
+
+		data = {"name": "小明", "age": 18}
+
+		with open("data.pkl", "wb") as f:
+			pickle.dump(data, f)
+
+		print("保存成功")
+	输出：
+		保存成功
+
+二十四、使用 pickle 读取 Python 对象
+	知识点：
+		pickle.load(file) 可以从文件中读取并恢复 Python 对象。
+	代码：
+		import pickle
+
+		with open("data.pkl", "rb") as f:
+			data = pickle.load(f)
+
+		print(data)
+	假设 data.pkl 中保存的是：
+		{"name": "小明", "age": 18}
+	输出：
+		{'name': '小明', 'age': 18}
+
+总结
+	本章节的重点可以概括为：
+	1. 使用 print() 输出内容。
+	2. 使用 str()、repr() 查看字符串的不同表现形式。
+	3. 使用 rjust()、ljust()、center()、zfill() 美化字符串输出。
+	4. 使用 str.format() 控制输出格式、宽度、对齐方式和小数位数。
+	5. 使用 input() 获取用户输入，并在需要时进行类型转换。
+	6. 使用 open()、read()、write() 等方法完成文件读写。
+	7. 使用 with open() 自动管理文件关闭。
+	8. 使用 pickle 保存和恢复 Python 对象。
+
+整体来看，这篇教程是学习 Python 命令行交互、文本处理、文件操作和对象保存的基础内容。

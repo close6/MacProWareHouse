@@ -1,0 +1,100 @@
+1.Python 支持各种数据结构的推导式：
+						a.列表(list)推导式
+						b.字典(dict)推导式
+						c.集合(set)推导式
+						d.元组(tuple)推导式
+
+
+	a.列表推导式:
+				[表达式 for 变量 in 列表] 
+				[out_exp_res for out_exp in input_list]
+				或者 
+				[表达式 for 变量 in 列表 if 条件]
+				[out_exp_res for out_exp in input_list if condition]
+					//out_exp_res：列表生成元素表达式，可以是有返回值的函数。
+					//for out_exp in input_list：迭代 input_list 将 out_exp 传入到 out_exp_res 表达式中。
+					//if condition：条件语句，可以过滤列表中不符合条件的值。
+		例子:
+			>>> names = ['Bob','Tom','alice','Jerry','Wendy','Smith']
+			>>> new_names = [name.upper()for name in names if len(name)>3]
+			>>> print(new_names)
+			['ALICE', 'JERRY', 'WENDY', 'SMITH']
+
+	b.字典推导式:
+				{ key_expr: value_expr for value in collection }
+				或
+				{ key_expr: value_expr for value in collection if condition }
+		例子1:
+			listdemo = ['Google','Runoob', 'Taobao']
+			# 将列表中各字符串值为键，各字符串的长度为值，组成键值对
+			>>> newdict = {key:len(key) for key in listdemo}
+			>>> newdict
+			{'Google': 6, 'Runoob': 6, 'Taobao': 6}
+									
+		例子2:
+			>>> dic = {x: x**2 for x in (2, 4, 6)}
+			>>> dic
+			{2: 4, 4: 16, 6: 36}
+			>>> type(dic)
+			<class 'dict'>
+
+	c.集合推导式:
+				{ expression for item in Sequence }
+				或
+				{ expression for item in Sequence if conditional }
+		例子:
+			>>> a = {x for x in 'abracadabra' if x not in 'abc'}
+			>>> a
+			{'d', 'r'}
+			>>> type(a)
+			<class 'set'>}
+
+	d.元组推导式:
+				(expression for item in Sequence )
+				或
+				(expression for item in Sequence if conditional )
+
+元组推导式和列表推导式的用法也完全相同，只是元组推导式是用 () 圆括号将各部分括起来，而列表推导式用的是中括号 []，另外元组推导式返回的结果是一个生成器对象。
+例如，我们可以使用下面的代码生成一个包含数字 1~9 的元组：
+		例子:
+			>>> a = (x for x in range(1,10))
+			>>> a
+			<generator object <genexpr> at 0x7faf6ee20a50>  # 返回的是生成器对象
+			>>> tuple(a)       # 使用 tuple() 函数，可以直接将生成器对象转换成元组
+			(1, 2, 3, 4, 5, 6, 7, 8, 9)
+
+
+
+
+总结:
+=============================
+补充：四种推导式 共性与个性
+=============================
+一、共性
+1. 基础语法结构统一：表达式 + for循环 + 可选if条件
+2. 作用一致：一行代码快速生成数据结构，简化循环写法
+3. 执行顺序：先遍历for → 再判断if条件 → 最后执行表达式生成元素
+4. 均支持多层for嵌套、多条件叠加
+
+二、各自个性
+1. 列表推导式
+   符号：[]
+   返回值：直接得到列表
+   特点：有序、元素可重复，日常使用频率最高
+
+2. 字典推导式
+   符号：{}
+   内部格式：必须为 键:值 结构
+   返回值：字典
+   特点：键唯一，常用于构建映射关系
+
+3. 集合推导式
+   符号：{}
+   内部格式：单个表达式（无键值对）
+   返回值：集合
+   特点：自动去重、无序
+
+4. 元组推导式
+   符号：()
+   返回值：生成器对象（惰性计算）
+   特点：不能直接得到元组，需使用 tuple() 转换；内存占用低，适合大数据场景

@@ -1,0 +1,160 @@
+Python3 pip 安装与使用精简总结：知识点、代码和输出
+这篇总结主要介绍 pip 工具的安装、常用命令、包管理操作以及国内镜像配置。下面按核心知识点精简整理。
+
+一、pip 概述与安装
+	知识点：
+		pip 是 Python 包管理工具，提供查找、下载、安装、卸载 Python 包的功能。
+		Python 2.7.9+ 或 Python 3.4+ 版本自带 pip 工具，无需额外安装。
+		pip 官网：https://pypi.org/project/pip/
+		pip 对应 Python 2.x，pip3 对应 Python 3.x。
+	代码：
+		pip --version      # Python2.x 版本命令
+		pip3 --version     # Python3.x 版本命令
+	输出：
+		pip 21.0.1 from .../pip (python 3.9)
+
+二、pip 的安装方法
+	知识点：
+		如果系统未自带 pip，可通过 get-pip.py 脚本安装。
+		用哪个版本的 Python 运行安装脚本，pip 就关联到哪个版本。
+		部分 Linux 发行版可直接用包管理器安装，如 Debian/Ubuntu 使用 apt-get。
+	代码：
+		# 方法1：使用 get-pip.py 脚本安装
+		$ curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+		$ sudo python3 get-pip.py    # Python3 环境
+
+		# 方法2：Linux 包管理器安装
+		$ sudo apt-get install python3-pip   # Debian/Ubuntu
+	输出：
+		Successfully installed pip-21.0.1
+
+三、pip 最常用命令（基础）
+	知识点：
+		pip --version：显示 pip 版本和安装路径。
+		pip --help：获取帮助信息，列出所有可用命令。
+		pip install -U pip：升级 pip 自身到最新版本。
+	代码：
+		pip --version
+		pip --help
+		pip install -U pip
+	输出：
+		pip 21.0.1 from .../site-packages/pip (python 3.9)
+		（help 输出所有命令列表，略）
+		Successfully installed pip-21.0.1
+
+四、安装 Python 包
+	知识点：
+		pip install 是安装包的核心命令，支持安装最新版本、指定版本、最小版本等多种方式。
+		版本号运算符：==（精确版本）、>=（最小版本）、<=（最大版本）、>（高于某版本）、<（低于某版本）。
+	代码：
+		pip install SomePackage              # 安装最新版本
+		pip install SomePackage==1.0.4       # 安装指定版本
+		pip install 'SomePackage>=1.0.4'     # 安装最小版本及以上
+
+		# 示例：安装 Django
+		pip install Django==1.7
+	输出：
+		Successfully installed Django-1.7
+
+五、升级和卸载包
+	知识点：
+		pip install --upgrade SomePackage：升级已安装的包到最新版本。
+		pip uninstall SomePackage：卸载已安装的包，会提示确认。
+		升级时同样可以使用版本号限制。
+	代码：
+		pip install --upgrade SomePackage    # 升级到最新版本
+		pip uninstall SomePackage            # 卸载包
+	输出：
+		Successfully installed SomePackage-2.0.0
+		Proceed (y/n)? y
+		Successfully uninstalled SomePackage-2.0.0
+
+六、查看包信息
+	知识点：
+		pip show SomePackage：显示已安装包的详细信息（版本、路径、依赖等）。
+		pip show -f SomePackage：显示指定包的所有文件列表。
+		pip list：列出当前环境中所有已安装的包及其版本。
+		pip list -o：列出当前可升级的包（outdated）。
+		pip search SomePackage：搜索 PyPI 上的包（部分源可能已禁用此功能）。
+	代码：
+		pip show Django
+		pip show -f Django
+		pip list
+		pip list -o
+	输出：
+		Name: Django
+		Version: 3.2
+		Summary: A high-level Python Web framework
+		Home-page: https://www.djangoproject.com/
+		Author: Django Software Foundation
+		Location: /usr/local/lib/python3.9/site-packages
+
+		Package    Version Latest Type
+		---------- ------- ------ -----
+		pip        21.0.1  21.1.0 wheel
+		setuptools 56.0.0  56.2.0 wheel
+
+七、pip 升级命令（跨平台）
+	知识点：
+		Linux/macOS 直接使用 pip/pip3 install --upgrade pip 升级。
+		Windows 平台建议使用 python -m pip install -U pip 方式，避免 pip 被占用导致升级失败。
+		如果升级命令出错，可以使用 easy_install --upgrade pip 作为备用方案。
+	代码：
+		# Linux / macOS
+		pip install --upgrade pip     # Python2.x
+		pip3 install --upgrade pip    # Python3.x
+
+		# Windows
+		python -m pip install -U pip   # Python2.x
+		python -m pip install -U pip   # Python3.x
+
+		# 备用方案
+		sudo easy_install --upgrade pip
+	输出：
+		Successfully installed pip-21.1.0
+
+八、国内镜像源配置（清华大学）
+	知识点：
+		国内访问 PyPI 官方源速度较慢，可使用清华大学开源软件镜像站加速。
+		临时使用：通过 -i 参数指定镜像地址，仅本次生效。
+		永久配置：pip >= 10.0.0 支持 config set 命令设置默认源。
+		如果网络较差，临时使用镜像站来升级 pip 本身也是推荐做法。
+	代码：
+		# 临时使用清华镜像安装包
+		pip install -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
+
+		# 示例：临时使用清华镜像安装 Django
+		pip install -i https://pypi.tuna.tsinghua.edu.cn/simple Django
+
+		# 永久配置清华镜像为默认源
+		pip install pip -U
+		pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+		# 网络较差时，临时用镜像升级 pip
+		pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pip -U
+	输出：
+		Successfully installed Django-3.2
+		Writing to /home/user/.config/pip/pip.ini
+		Successfully installed pip-21.1.0
+
+九、Python2 与 Python3 共存时的使用
+	知识点：
+		当系统同时安装 Python2 和 Python3 时，使用 python2/python3 -m pip 可以精确指定 pip 关联的 Python 版本。
+		这样可以避免 pip/pip3 命令指向混乱的问题。
+	代码：
+		# Python2 环境安装包
+		python2 -m pip install SomePackage
+
+		# Python3 环境安装包
+		python3 -m pip install SomePackage
+	输出：
+		Successfully installed SomePackage-1.0.0
+
+十、pip 核心注意事项
+	知识点：
+		升级 pip 时如果直接执行 pip install -U pip 报错，优先使用 python -m pip install -U pip。
+		生产环境建议使用虚拟环境（venv/virtualenv）管理依赖，避免包版本冲突。
+		安装包时注意版本兼容性，某些旧版本包可能不支持新版 Python。
+		国内网络环境下，强烈建议配置清华或阿里云镜像源，大幅提升下载速度。
+		卸载包时 pip 会提示确认（Proceed y/n?），输入 y 确认即可。
+		使用 requirements.txt 可以批量管理依赖：pip install -r requirements.txt。

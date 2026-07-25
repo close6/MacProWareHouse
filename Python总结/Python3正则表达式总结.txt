@@ -1,0 +1,184 @@
+Python3 正则表达式精简总结：知识点、代码和输出
+这篇总结主要介绍 Python3 正则表达式的匹配、查找、替换、分割和常用规则。下面按核心知识点精简整理。
+一、正则表达式和 re 模块
+	知识点：
+		正则表达式用于按“模式”检查、查找和处理字符串。
+		Python 使用 re 模块，正则模式建议写成原始字符串 r"..."，避免反斜杠被重复转义。
+	代码：
+		import re
+
+		result = re.search(r"\d+", "订单号是 2026")
+		print(result.group())
+	输出：
+		2026
+
+二、re.match 和 re.search
+	知识点：
+		re.match() 只从字符串开头匹配。
+		re.search() 扫描整个字符串，返回第一个匹配结果。
+		匹配失败都返回 None。
+	代码：
+		import re
+
+		print(re.match(r"Python", "学习 Python"))
+		print(re.search(r"Python", "学习 Python").group())
+	输出：
+		None
+		Python
+
+三、Match 对象
+	知识点：
+		group()：取得匹配内容。
+		start()、end()：取得开始和结束索引。
+		span()：返回 (开始索引, 结束索引)。
+	代码：
+		import re
+
+		m = re.search(r"\d+", "abc123xyz")
+		print(m.group())
+		print(m.span())
+	输出：
+		123
+		(3, 6)
+
+四、分组和 groups
+	知识点：
+		小括号 (...) 用于分组。
+		group(0) 是完整匹配，group(1) 是第一个分组。
+		groups() 返回所有分组组成的元组。
+	代码：
+		import re
+
+		m = re.search(r"(\d{4})-(\d{2})-(\d{2})", "日期 2026-06-27")
+		print(m.group(0))
+		print(m.groups())
+	输出：
+		2026-06-27
+		('2026', '06', '27')
+
+五、常用匹配符号
+	知识点：
+		^、$：字符串开头、结尾。
+		.：除换行符外的任意字符。
+		\d、\D：数字、非数字。
+		\w、\W：单词字符、非单词字符。
+		\s、\S：空白字符、非空白字符。
+		[abc]：匹配其中一个字符；[^abc]：匹配不在其中的字符。
+	代码：
+		import re
+
+		print(re.findall(r"\d+", "A12 B345"))
+		print(bool(re.fullmatch(r"[A-Za-z]+", "Python")))
+	输出：
+		['12', '345']
+		True
+
+六、重复次数
+	知识点：
+		*：前一项出现 0 次或多次。
+		+：前一项出现 1 次或多次。
+		?：前一项出现 0 次或 1 次。
+		{n}、{n,}、{n,m}：出现 n 次、至少 n 次、n 到 m 次。
+	代码：
+		import re
+
+		phones = ["13812345678", "12345"]
+		for phone in phones:
+			print(bool(re.fullmatch(r"1\d{10}", phone)))
+	输出：
+		True
+		False
+
+七、贪婪和非贪婪匹配
+	知识点：
+		*、+、? 默认尽量多匹配，叫贪婪匹配。
+		在量词后加 ?，如 .*?，表示尽量少匹配。
+	代码：
+		import re
+
+		text = "<b>一</b><b>二</b>"
+		print(re.findall(r"<b>(.*?)</b>", text))
+	输出：
+		['一', '二']
+
+八、re.findall 和 re.finditer
+	知识点：
+		findall() 返回所有匹配组成的列表。
+		finditer() 返回 Match 对象迭代器，适合同时获取内容和位置。
+	代码：
+		import re
+
+		text = "12a32bc43"
+		print(re.findall(r"\d+", text))
+		for m in re.finditer(r"\d+", text):
+			print(m.group(), m.span())
+	输出：
+		['12', '32', '43']
+		12 (0, 2)
+		32 (3, 5)
+		43 (7, 9)
+
+九、re.sub 替换
+	知识点：
+		re.sub(pattern, repl, string, count=0) 替换匹配内容。
+		count=0 表示全部替换；repl 也可以是函数。
+	代码：
+		import re
+
+		phone = "138-1234-5678"
+		print(re.sub(r"\D", "", phone))
+		print(re.sub(r"\d{4}$", "****", phone))
+	输出：
+		13812345678
+		138-1234-****
+
+十、re.split 分割
+	知识点：
+		re.split() 按正则模式分割字符串。
+		maxsplit 可以限制分割次数。
+	代码：
+		import re
+
+		print(re.split(r"[,;\s]+", "Python,Java; C++"))
+	输出：
+		['Python', 'Java', 'C++']
+
+十一、re.compile 预编译
+	知识点：
+		re.compile() 把正则字符串编译成 Pattern 对象。
+		同一正则需要重复使用时，预编译后代码更清楚。
+	代码：
+		import re
+
+		pattern = re.compile(r"\d+")
+		print(pattern.findall("A12 B34"))
+	输出：
+		['12', '34']
+
+十二、常用匹配标志
+	知识点：
+		re.I：忽略大小写。
+		re.M：让 ^ 和 $ 匹配每一行的开头和结尾。
+		re.S：让 . 也能匹配换行符。
+		re.X：允许在复杂正则中添加空格和注释。
+		多个标志可用 | 组合。
+	代码：
+		import re
+
+		text = "python\nPYTHON"
+		print(re.findall(r"^python$", text, re.I | re.M))
+	输出：
+		['python', 'PYTHON']
+
+十三、正则使用重点
+	知识点：
+		需要完整验证字符串时用 re.fullmatch()，不要只用 search()。
+		用户输入要按普通文本匹配时，先用 re.escape() 转义特殊符号。
+		正则适合处理结构明确的文本，不适合解析复杂 HTML。
+	代码：
+		import re
+
+		keyword = "a+b"
+		print(bool(re.search(re.escape(keyword), "内容是 a+b")))
+	输出：
+		True

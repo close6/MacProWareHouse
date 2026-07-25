@@ -1,0 +1,73 @@
+1.列表：列表的数据项不需要具有相同的类型，创建一个列表，只要把逗号分隔的不同的数据项使用方括号括起来即可
+		a.list = ['Google', 'Runoob', "Zhihu", "Taobao", "Wiki"];print ("list[1:-2]: ", list[1:-2])
+		  输出:print ("list[1:-2]: ", list[1:-2])
+
+		#b.添加
+		list1 = ['Google', 'Runoob', 'Taobao']
+		list1.append('Baidu')
+		print ("更新后的列表 : ", list1)
+		输出:更新后的列表 :  ['Google', 'Runoob', 'Taobao', 'Baidu']
+
+		#c.删除
+		list = ['Google', 'Runoob', 1997, 2000]
+		del list[2]
+		print ("删除第三个元素 : ", list)
+		输出:删除第三个元素 :  ['Google', 'Runoob', 2000]
+
+		#d.列表比较
+		# 导入 operator 模块
+		import operator
+
+		a = [1, 2]
+		b = [2, 3]
+		c = [2, 3]
+		print("operator.eq(a,b): ", operator.eq(a,b))
+		print("operator.eq(c,b): ", operator.eq(c,b))
+		输出:operator.eq(a,b):  False
+			operator.eq(c,b):  True
+
+		#e.列表函数&方法
+		函数:
+			1	len(list)	列表元素个数
+			2	max(list)	返回列表元素最大值
+			3	min(list)	返回列表元素最小值
+			4	list(seq)	将元组转换为列表
+		方法:
+			1	list.append(obj)	在列表末尾添加新的对象
+			2	list.count(obj)		统计某个元素在列表中出现的次数
+			3	list.extend(seq)	在列表末尾一次性追加另一个序列中的多个值（用新列表扩展原来的列表）
+				例如:
+				a.	list1 = [1, 2, 3]				
+					list2 = [4, 5, 6]
+					list1.extend(list2)
+					print(list1)
+
+				b.	list3 = [1, 2, 3]
+					tuple1 = (4, 5)
+					list3.extend(tuple1)
+					print(list3)
+
+				c.	list4 = [1, 2, 3]
+					str1 = 'abc'
+					list4.extend(str1)
+					print(list4)
+
+			4	list.index(obj)		列表中找出某个值第一个匹配项的索引位置
+			5	list.insert(index, obj)		将对象插入列表
+			6	list.pop([index=-1])	移除列表中的一个元素（默认最后一个元素），并且返回该元素的值
+			7	list.remove(obj)		除列表中某个值的第一个匹配项
+			8	list.reverse()	反向列表中元素
+			9	list.sort( key=None, reverse=False)		对原列表进行排序
+				例如:
+					students = [
+								{'name': 'Alice', 'age': 20},
+								{'name': 'Bob', 'age': 18},
+								{'name': 'Charlie', 'age': 22}
+								]
+					students.sort(key = lambda student: student['age'])
+					print(students)
+				输出:
+					[{'name': 'Bob', 'age': 18}, {'name': 'Alice', 'age': 20}, {'name': 'Charlie', 'age': 22}]。这里使用 key 参数，通过 lambda 函数指定按照学生字典中的 'age' 键的值进行排序。
+
+			10	list.clear()	清空列表
+			11	list.copy()		复制列表

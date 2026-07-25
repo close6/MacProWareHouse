@@ -1,0 +1,284 @@
+Python3 内置函数精简总结：知识点、代码和输出
+这篇总结主要介绍 Python3 中 68 个内置函数的分类、常用函数的用法及示例。下面按核心知识点精简整理。
+
+一、内置函数概述
+	知识点：
+		Python 内置函数无需导入任何库即可直接使用，涵盖数据类型转换、数学计算、迭代操作、反射机制等场景。
+		掌握内置函数的好处：减少代码量、提升可读性、性能更优（底层 C 实现）。
+		常见分类：数值计算、类型转换、迭代与函数式、反射与对象、输入输出。
+	代码：
+		# 求和
+		print(sum([1, 2, 3]))
+
+		# 最大值
+		print(max([3, 6, 2]))
+
+		# 类型转换
+		print(int("123"))
+
+		# 枚举
+		for i, v in enumerate(['a', 'b']):
+			print(i, v)
+
+		# map
+		print(list(map(lambda x: x * 2, [1, 2, 3])))
+	输出：
+		6
+		6
+		123
+		0 a
+		1 b
+		[2, 4, 6]
+
+二、数值计算类函数
+	知识点：
+		abs(x)：返回数字的绝对值。
+		round(x[, n])：返回浮点数 x 的四舍五入值，n 为保留小数位数。
+		min(iterable[, key]) / max(iterable[, key])：返回可迭代对象中的最小/最大值，key 可指定排序依据。
+		sum(iterable[, start])：对可迭代对象求和，start 为初始值。
+		pow(x, y[, z])：返回 x 的 y 次方，若提供 z 则返回 pow(x, y) % z。
+		divmod(a, b)：返回 (a // b, a % b) 的元组。
+	代码：
+		print(abs(-10))
+		print(round(3.14159, 2))
+		print(min([3, 1, 4, 1, 5]))
+		print(max([3, 1, 4, 1, 5]))
+		print(sum([1, 2, 3, 4], 10))
+		print(pow(2, 3))
+		print(pow(2, 3, 3))
+		print(divmod(17, 5))
+	输出：
+		10
+		3.14
+		1
+		5
+		20
+		8
+		2
+		(3, 2)
+
+三、类型转换类函数
+	知识点：
+		int(x[, base])：将 x 转换为整数，base 指定进制（默认 10）。
+		float(x)：将 x 转换为浮点数。
+		str(object)：将对象转换为字符串。
+		bool(x)：将 x 转换为布尔值，空值/0/None 等为 False，其余为 True。
+		list([iterable]) / tuple([iterable])：转换为列表/元组。
+		dict(**kwargs) / set([iterable]) / frozenset([iterable])：转换为字典/集合/不可变集合。
+		bytes([source[, encoding[, errors]]]) / bytearray([source[, encoding[, errors]]])：创建字节/字节数组。
+		complex([real[, imag]])：创建复数。
+		bin(x) / oct(x) / hex(x)：将整数转换为二进制/八进制/十六进制字符串。
+		chr(i) / ord(c)：Unicode 码点与字符互转。
+		ascii(object)：返回对象的可打印表示，非 ASCII 字符转义。
+	代码：
+		print(int("123"))
+		print(int("FF", 16))
+		print(float("3.14"))
+		print(str(123))
+		print(bool(0), bool(1), bool(""), bool("hello"))
+		print(list("abc"))
+		print(tuple([1, 2, 3]))
+		print(set([1, 2, 2, 3]))
+		print(bin(10), oct(10), hex(10))
+		print(chr(65), ord('A'))
+		print(ascii("你好"))
+	输出：
+		123
+		255
+		3.14
+		123
+		False True False True
+		['a', 'b', 'c']
+		(1, 2, 3)
+		{1, 2, 3}
+		0b1010 0o12 0xa
+		A 65
+		'\\u4f60\\u597d'
+
+四、迭代与函数式类函数
+	知识点：
+		map(function, iterable, ...)：对可迭代对象的每个元素执行函数，返回迭代器。
+		filter(function, iterable)：过滤可迭代对象，保留使函数返回 True 的元素。
+		zip(*iterables)：将多个可迭代对象打包成元组迭代器，最短的可迭代对象决定长度。
+		enumerate(iterable, start=0)：为可迭代对象添加索引，返回 (index, value) 元组迭代器。
+		range([start,] stop[, step])：生成整数序列，常用于 for 循环。
+		reversed(seq)：返回序列的反向迭代器。
+		sorted(iterable[, key][, reverse])：返回排序后的新列表，key 指定排序依据，reverse=True 降序。
+		iter(object[, sentinel])：返回迭代器对象。
+		next(iterator[, default])：从迭代器获取下一个元素，可设置默认值避免 StopIteration。
+		slice([start,] stop[, step])：创建切片对象，用于切片操作。
+	代码：
+		print(list(map(str.upper, ['a', 'b', 'c'])))
+		print(list(filter(lambda x: x > 0, [-1, 0, 1, 2])))
+		print(list(zip([1, 2, 3], ['a', 'b', 'c'])))
+		print(list(enumerate(['a', 'b', 'c'], start=1)))
+		print(list(range(1, 10, 2)))
+		print(list(reversed([1, 2, 3])))
+		print(sorted([3, 1, 4, 1, 5], reverse=True))
+		print(sorted(['banana', 'pie', 'Washington'], key=len))
+		it = iter([1, 2, 3])
+		print(next(it), next(it))
+	输出：
+		['A', 'B', 'C']
+		[1, 2]
+		[(1, 'a'), (2, 'b'), (3, 'c')]
+		[(1, 'a'), (2, 'b'), (3, 'c')]
+		[1, 3, 5, 7, 9]
+		[3, 2, 1]
+		[5, 4, 3, 1, 1]
+		['pie', 'banana', 'Washington']
+		1 2
+
+五、反射与对象类函数
+	知识点：
+		type(object)：返回对象的类型。
+		isinstance(object, classinfo)：判断对象是否是指定类型或其子类的实例。
+		issubclass(class, classinfo)：判断类是否是另一个类的子类。
+		callable(object)：判断对象是否可调用（函数、类、实现了 __call__ 的对象）。
+		hasattr(object, name) / getattr(object, name[, default]) / setattr(object, name, value) / delattr(object, name)：对象属性的判断、获取、设置、删除。
+		vars([object])：返回对象的 __dict__ 属性，无参数时等价于 locals()。
+		dir([object])：返回对象的属性和方法列表，无参数时返回当前作用域名称列表。
+		id(object)：返回对象的唯一标识符（内存地址）。
+		hash(object)：返回对象的哈希值。
+		repr(object)：返回对象的可打印表示字符串，通常可用于 eval() 重建对象。
+		object()：创建一个新的空对象，所有类的基类。
+		property(fget=None, fset=None, fdel=None, doc=None)：将方法转换为属性描述符。
+		staticmethod(function) / classmethod(function)：将方法转换为静态方法/类方法。
+		super([type[, object-or-type]])：返回父类的代理对象，用于调用父类方法。
+	代码：
+		print(type(123))
+		print(isinstance(123, int))
+		print(isinstance(123, (int, str)))
+		print(issubclass(bool, int))
+		print(callable(len))
+		print(callable(123))
+
+		class Person:
+			name = "Tom"
+		p = Person()
+		print(hasattr(p, 'name'))
+		print(getattr(p, 'name'))
+		setattr(p, 'age', 20)
+		print(p.age)
+		print(dir(p))
+		print(id(p))
+		print(hash("hello"))
+		print(repr([1, 2, 3]))
+	输出：
+		<class 'int'>
+		True
+		True
+		True
+		True
+		False
+		True
+		Tom
+		20
+		['__class__', '__delattr__', ..., 'age', 'name']
+		140123456789012
+		-1234567890123456789
+		[1, 2, 3]
+
+六、输入输出与文件类函数
+	知识点：
+		print(*objects, sep=' ', end='\n', file=sys.stdout, flush=False)：打印输出，sep 分隔符，end 结尾符，file 输出目标，flush 是否强制刷新。
+		input([prompt])：读取用户输入，返回字符串。
+		open(file, mode='r', encoding=None, ...)：打开文件，返回文件对象。
+		format(value[, format_spec])：格式化值，等价于 value.__format__(format_spec)。
+	代码：
+		print("a", "b", "c", sep="-")
+		print("Hello", end=" ")
+		print("World")
+
+		# input 示例（交互式运行）
+		# name = input("请输入名字: ")
+		# print("你好,", name)
+
+		# open 示例
+		with open("test.txt", "w", encoding="utf-8") as f:
+			f.write("Hello Python")
+
+		with open("test.txt", "r", encoding="utf-8") as f:
+			print(f.read())
+
+		print(format(3.14159, ".2f"))
+		print("{:.2f}".format(3.14159))
+	输出：
+		a-b-c
+		Hello World
+		Hello Python
+		3.14
+		3.14
+
+七、其他常用内置函数
+	知识点：
+		help([object])：查看对象的帮助文档，交互式环境中非常有用。
+		len(s)：返回对象的长度（元素个数），支持字符串、列表、元组、字典、集合等。
+		globals()：返回当前全局符号表的字典。
+		locals()：返回当前局部符号表的字典。
+		compile(source, filename, mode[, flags[, dont_inherit]])：将字符串编译为代码对象。
+		eval(expression[, globals[, locals]])：执行字符串表达式并返回结果。
+		exec(object[, globals[, locals]])：执行字符串/代码对象，不返回值。
+		memoryview(obj)：创建内存视图对象，用于直接访问二进制数据而无需复制。
+		__import__(name[, globals[, locals[, fromlist[, level]]]])：动态导入模块。
+		reload(module)：重新加载已导入的模块（Python3 中需从 importlib 导入）。
+	代码：
+		print(len("hello"))
+		print(len([1, 2, 3, 4]))
+		print(eval("1 + 2 * 3"))
+		print(eval("[x for x in range(5)]"))
+
+		code = compile("print('Hello from compile')", "<string>", "exec")
+		exec(code)
+
+		data = bytearray(b'Hello')
+		mv = memoryview(data)
+		print(mv[0])
+		mv[0] = 104  # 修改内存视图会反映到原数据
+		print(data)
+	输出：
+		5
+		4
+		7
+		[0, 1, 2, 3, 4]
+		Hello from compile
+		72
+		bytearray(b'hello')
+
+八、内置函数完整速查表
+	知识点：
+		Python3 共有 68 个内置函数，按功能分类如下：
+
+		数值计算（7个）：
+		abs()、round()、min()、max()、sum()、pow()、divmod()
+
+		类型转换（18个）：
+		int()、float()、str()、bool()、list()、tuple()、dict()、set()、frozenset()
+		bytes()、bytearray()、complex()、bin()、oct()、hex()、chr()、ord()、ascii()
+
+		迭代与函数式（10个）：
+		map()、filter()、zip()、enumerate()、range()、reversed()、sorted()
+		iter()、next()、slice()
+
+		反射与对象（15个）：
+		type()、isinstance()、issubclass()、callable()、hasattr()、getattr()、setattr()
+		delattr()、vars()、dir()、id()、hash()、repr()、object()、property()
+		staticmethod()、classmethod()、super()
+
+		输入输出（4个）：
+		print()、input()、open()、format()
+
+		其他（8个）：
+		help()、len()、globals()、locals()、compile()、eval()、exec()
+		memoryview()、__import__()、reload()
+
+九、内置函数核心注意事项
+	知识点：
+		map()、filter()、zip()、range()、reversed() 返回的是迭代器/惰性对象，需要用 list() 转换为列表才能直接查看内容。
+		sorted() 返回新列表，不改变原对象；而 list.sort() 是原地排序，返回 None。
+		eval() 和 exec() 执行字符串代码存在安全风险，不要执行不可信来源的字符串。
+		isinstance() 比 type() 更适合类型检查，因为它支持继承链判断。
+		round() 采用银行家舍入法（四舍六入五成双），不是简单的四舍五入。
+		open() 文件操作推荐使用 with 语句自动管理资源关闭。
+		divmod() 返回的商是向下取整的整数（//），对于负数需要注意。
+		Python3 中 print 是函数，必须用括号；Python2 中 print 是语句，这是常见兼容性问题。

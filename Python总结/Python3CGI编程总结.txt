@@ -1,0 +1,153 @@
+Python3 CGI 编程精简总结：知识点、代码和输出
+这篇总结主要介绍 CGI 的运行流程、服务器要求、表单数据、HTTP 头、环境变量和 Cookie。下面按核心知识点精简整理。
+
+一、CGI 的作用和流程
+	知识点：
+		CGI（通用网关接口）让 Web 服务器调用程序，动态生成 HTTP 响应。
+		流程：浏览器发送请求 → 服务器执行 CGI 脚本 → 脚本输出 HTTP 头和正文 → 浏览器显示结果。
+		CGI 每次请求通常启动一个新进程，效率较低，现代项目多使用 WSGI/ASGI 框架。
+	代码：
+		#!/usr/bin/env python3
+
+		print("Content-Type: text/plain; charset=utf-8")
+		print()
+		print("Hello CGI")
+	输出：
+		浏览器页面显示：Hello CGI
+
+二、CGI 脚本运行要求
+	知识点：
+		Web 服务器必须开启 CGI，并配置可执行脚本目录。
+		Linux 中脚本通常需要执行权限，例如 chmod 755 hello.py。
+		第一行 shebang 指定 Python；HTTP 头后必须输出一个空行。
+	代码：
+		#!/usr/bin/env python3
+
+		print("Content-Type: text/html; charset=utf-8")
+		print()
+		print("<h1>你好</h1>")
+	输出：
+		浏览器以一级标题显示：你好
+
+三、HTTP 响应头
+	知识点：
+		格式为“字段名: 字段值”。
+		Content-Type 指定正文类型和编码。
+		Location 用于重定向，Set-Cookie 用于设置 Cookie。
+		所有响应头输出完后必须有一个空行，之后才是正文。
+	代码：
+		print("Content-Type: text/plain; charset=utf-8")
+		print("X-Demo: CGI")
+		print()
+		print("响应正文")
+	输出：
+		响应正文
+
+四、CGI 环境变量
+	知识点：
+		REQUEST_METHOD：请求方法，如 GET、POST。
+		QUERY_STRING：URL 中 ? 后面的查询参数。
+		CONTENT_LENGTH、CONTENT_TYPE：POST 数据长度和类型。
+		HTTP_COOKIE：浏览器发送的 Cookie。
+		REMOTE_ADDR：客户端 IP；SERVER_NAME：服务器名称。
+	代码：
+		import os
+
+		method = os.environ.get("REQUEST_METHOD", "未知")
+		query = os.environ.get("QUERY_STRING", "")
+		print("Content-Type: text/plain; charset=utf-8")
+		print()
+		print("请求方法:", method)
+		print("查询参数:", query)
+	输出：
+		请求方法: GET
+		查询参数: name=Tom
+
+五、GET 和 POST
+	知识点：
+		GET 把参数放在 URL 的 ? 后面，适合查询数据，可缓存和收藏，不应传密码等敏感信息。
+		POST 把数据放在请求体中，适合提交和修改数据，但 HTTPS 才能保护传输内容。
+		表单的 name 决定提交参数名，method 决定 GET 或 POST。
+	代码：
+		<form action="/cgi-bin/form.py" method="post">
+			<input type="text" name="username">
+			<input type="submit" value="提交">
+		</form>
+	输出：
+		提交后，服务器收到 username 字段。
+
+六、读取表单数据
+	知识点：
+		教程使用 cgi.FieldStorage() 同时读取 GET 和 POST 表单数据。
+		getfirst() 读取单值，getlist() 读取复选框等多值字段。
+		重要：cgi 模块从 Python 3.13 起已被移除；旧 CGI 环境可用 Python 3.12 或更早版本学习，现代项目应改用 Web 框架。
+	代码：
+		# 仅适用于仍包含 cgi 模块的旧版 Python
+		import cgi
+
+		form = cgi.FieldStorage()
+		username = form.getfirst("username", "匿名")
+		print("Content-Type: text/plain; charset=utf-8")
+		print()
+		print("你好，" + username)
+	输出：
+		你好，Tom
+
+七、复选框、单选框和下拉框
+	知识点：
+		复选框可提交多个同名值，应按列表读取。
+		单选框和下拉框通常只提交一个值。
+		服务器不能相信表单输入，必须检查字段是否存在、格式是否合法。
+	代码：
+		# 旧版 Python CGI 示例
+		import cgi
+
+		form = cgi.FieldStorage()
+		hobbies = form.getlist("hobby")
+		color = form.getfirst("color", "未选择")
+		print("Content-Type: text/plain; charset=utf-8")
+		print()
+		print("爱好:", ", ".join(hobbies))
+		print("颜色:", color)
+	输出：
+		爱好: 编程, 阅读
+		颜色: blue
+
+八、输出 HTML 时防止注入
+	知识点：
+		不能把用户输入直接拼进 HTML，否则可能产生跨站脚本攻击（XSS）。
+		使用 html.escape() 转义用户输入。
+	代码：
+		import html
+
+		name = '<script>alert("x")</script>'
+		print("Content-Type: text/html; charset=utf-8")
+		print()
+		print("<p>" + html.escape(name) + "</p>")
+	输出：
+		页面显示脚本文本，不会执行脚本。
+
+九、Cookie 的设置和读取
+	知识点：
+		服务器用 Set-Cookie 响应头设置 Cookie。
+		浏览器之后通过 Cookie 请求头传回，CGI 中通常可从 HTTP_COOKIE 读取。
+		实际项目应设置 HttpOnly、Secure、SameSite，并避免在 Cookie 中保存明文密码。
+	代码：
+		from http.cookies import SimpleCookie
+		import os
+
+		cookie = SimpleCookie(os.environ.get("HTTP_COOKIE", ""))
+		username = cookie.get("username")
+		print("Set-Cookie: theme=dark; Path=/; HttpOnly; SameSite=Lax")
+		print("Content-Type: text/plain; charset=utf-8")
+		print()
+		print(username.value if username else "未登录")
+	输出：
+		如果已有 username=Tom：Tom
+
+十、CGI 核心注意事项
+	知识点：
+		HTTP 头和正文之间必须有空行，否则服务器可能报错。
+		脚本要有正确路径、执行权限和服务器 CGI 配置。
+		所有输入都要验证，输出到 HTML 前要转义，敏感数据必须使用 HTTPS。
+		CGI 是理解 Web 请求和响应的基础；新项目优先使用 Flask、Django、FastAPI 等现代框架。

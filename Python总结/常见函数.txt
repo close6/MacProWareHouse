@@ -1,0 +1,128 @@
+1.int() a从浮点数转换:print(int(-3.7))     				# 输出: -3
+		b从布尔值转换:print(int(True))     				# 输出: 1
+		c从字符串转换:print(int("  10  ")) 				# 输出: 10（自动去除空格）
+		d二进制字符串（以 0b 开头）:print(int("1010", 2))   # 输出: 10
+		e八进制字符串（以 0o 开头）:print(int("12", 8))     # 输出: 10
+		f十六进制字符串（以 0x 开头）:print(int("a", 16))     # 输出: 10
+								  print(int("FF", 16))    # 输出: 255
+		g带前缀的字符串:
+								  print(int("0b1010", 2)) # 输出: 10
+								  print(int("0o12", 8))   # 输出: 10
+								  print(int("0xff", 16))  # 输出: 255
+
+2.__repr__和__str__的区别：
+		在Python 中有两个魔法方法都是用来描述对象信息的，__str__和__repr__，那为什么要定义两个这样的方法呢，其实是他们设计的目的是不一样的： 						 1. __repr__的目标是准确性，或者说，__repr__的结果是让解释器用的。 
+					  2. __str__的目标是可读性，或者说，__str__的结果是让人看的。
+那下边，我们详细的来看一下，他们的用法： 在不重写__str__ 和 __repr__的情况下，打印对象的输出结果不太友好，是对象的内存地址，即 id 的结果。
+
+		# 定义 Person 类
+		class Person(object):
+			def __init__(self, name):
+				self.name = name
+
+
+		p = Person("isaac")	
+		以下为测试输出的结果：
+
+		>>> print(p)
+		<__main__.Person object at 0x10f29b940>
+		>>> p
+		<__main__.Person object at 0x10f29b940>
+		>>> p.__str__()
+		'<__main__.Person object at 0x10f29b940>'
+		>>> p.__repr__()
+		'<__main__.Person object at 0x10f29b940>'
+		这样的输出结果，并不是我们想要的结果，此时我们重写__str__ 和 __repr__方法。
+
+		2.1 重写__str__ 方法
+
+		# 定义 Person 类
+		class Person(object):
+			def __init__(self, name):
+				self.name = name
+
+			def __str__(self):
+				return "__str__ 方法 " + self.name
+
+
+		p = Person("isaac")
+		以下为测试结果：
+
+		>>> print(p)
+		__str__ 方法 isaac
+		>>> str(p)
+		'__str__ 方法 isaac'
+		>>> f"{p}"
+		'__str__ 方法 isaac'
+		>>> p.__str__()
+		'__str__ 方法 isaac'
+		>>> p
+		<demo.Person object at 0x10e0e3588>
+		此时我们发现在使用 print 打印对象、对象的格式化输出以及调用 str 方法，调用的都是__str__方法。但在交互环境下，直接输出 对象的时候，没有			调用__str__ 方法，输出的结果仍然是 id 的结果。
+
+		2.2 重写__repr__ 方法
+
+		# 定义 Person 类
+		class Person(object):
+			def __init__(self, name):
+				self.name = name
+
+			def __str__(self):
+				return "__str__ 方法 " + self.name
+
+			def __repr__(self):
+				return "__repr__ 方法 " + self.name
+
+
+		p = Person("isaac")
+		此时，我们再来看输出的结果，
+
+		>>> p
+		__repr__ 方法isaac
+		>>> p.__repr__()
+		'__repr__ 方法isaac'
+		>>> print(p)
+		__str__ 方法 isaac
+		通过简单的对比，我们发现，在交互环境下，直接输出对象，调用的__repr__ 方法。 另外还需要注意的是，如果将对象放在容器中进行输出，调用的是_			_repr__ 方法。
+
+		>>> [p]
+		[__repr__ 方法 isaac]
+		>>> (p)
+		__repr__ 方法 isaac
+		>>> {"1":p}
+		{'1': __repr__ 方法 isaac}
+		>>> print([p])
+		[__repr__ 方法 isaac]
+		3. 总结
+
+		Python 中的__str__ 和 __repr__方法都是用来显示的，即描述对象信息的。
+			1. __str__的目标是可读性，或者说，__str__的结果是让人看的。主要用来打印，即 print 操作， 
+			2. __repr__的目标是准确性，或者说，__repr__的结果是让解释器用的。__repr__用于交互模式下提示回应， 			
+			3. 如果没有重写__str__方法，但重写了__repr__方法时，所有调用__str__的时机都会调用__repr__方法。
+
+3.complex(real [,imag]):创建一个复数
+		# 使用两个参数创建复数：实部和虚部
+			c1 = complex(3, 4)
+			print(c1)          # 输出: (3+4j)
+
+		# 从字符串创建复数
+			c1 = complex("3+4j")
+			print(c1)          # 输出: (3+4j)
+
+		# 带空格也可以
+			c2 = complex("  1 + 2j  ")
+			print(c2)          # 输出: (1+2j)
+
+		# 模（绝对值）
+			print(f"模: {abs(a)}")  # 输出: 模: 5.0
+
+4.eval(str):用来计算在字符串中的有效Python表达式,并返回一个对象
+		# 函数调用
+		result = eval("len('hello')")
+		print(result)  # 输出: 5
+		# 计算数学表达式
+		result = eval("1 + 2 + 3")
+		print(result)  # 输出: 6
+
+5.__init__():这里的__init__方法是一个特殊的方法（init是单词初始化initialization的省略形式），在使用类创建对象之后被执行，用于给新创建的对象				初始化属性用。
+		#a.（）内self是默认的，例如（self,name,age）或者(name,age)都可以

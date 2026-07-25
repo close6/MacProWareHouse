@@ -1,0 +1,95 @@
+1. 多值匹配 | 或逻辑
+		mode = "val"
+		match mode:
+			case "train" | "training":
+				print("开启训练模式")
+			case "val" | "valid" | "validation":
+				print("开启验证模式")
+			case "test":
+				print("开启测试模式")
+			case _:
+				raise ValueError("模式只能是train/val/test")
+
+2.绑定变量（提取匹配值）
+		match res := (12.3, 89.2):
+			case loss, acc:
+				print(f"损失值:{loss:.4f}, 准确率:{acc:.2f}%")
+
+3.列表 / 元组结构解构（数据集、指标解析神器）:自动按位置拆分元素，不用手动索引取值
+		# (epoch, train_loss, val_acc)
+		log_data = (10, 0.213, 91.5)
+		match log_data:
+			case epoch, loss, acc:
+				print(f"第{epoch}轮，训练损失={loss}, 验证精度={acc}")
+
+	限定长度匹配，长度不对自动走兜底：
+		log_data = (10, 0.213)
+		match log_data:
+			case epoch, loss, acc:
+				print(f"精度：{acc}")
+			case _:
+				print("日志数据字段缺失")
+
+4. 字典模式匹配（解析配置、json 实验参数）:只匹配指定 key，不需要完整字典
+		config = {"lr": 1e-3, "batch_size": 32, "device": "cuda"}
+		match config:
+			case {"lr": lr, "batch_size": bs}:
+				print(f"学习率={lr}, 批次大小={bs}")
+			case _:
+				print("配置缺少必要超参")
+
+5. 类型匹配 + 守卫条件（if 子句过滤）:case 变量 as 类型 if 条件，精准分发不同数据类型
+		def calc_metric(data):
+			match data:
+				case list() as lst if len(lst) > 0:
+					return sum(lst)/len(lst)
+				case float() | int() as num:
+					return num
+				case _:
+					raise TypeError("输入必须是数字或非空列表")
+
+		print(calc_metric([1,2,3]))
+		print(calc_metric(95.2))
+
+6. 类实例对象匹配（PyTorch 自定义 Dataset、模型分发）
+		class TrainConfig:
+			def __init__(self, lr):
+				self.lr = lr
+
+		cfg = TrainConfig(1e-4)
+		match cfg:
+			case TrainConfig(lr=learning_rate):
+				print(f"训练学习率：{learning_rate}")
+
+7、下划线 _ 详解
+		a._ 通配任意内容，必须放最后，充当 else；
+		b.同一个 match 只能有一个 _；
+		c.匹配顺序自上而下，命中第一个 case 就退出，不会继续向下匹配。
+		d.	写法	        含义	    行为
+			case 100:	匹配值	判断 a == 100
+			case "ok":	匹配值	判断 a == "ok"
+			case x:	    绑定变量	自动执行 x = a
+			case _:	    通配符	匹配所有（不创建变量）
+
+8.易错:
+		target = 20
+		b = 10
+		match target:
+			case b:
+				print("匹配上了")
+			case _:
+				print("没匹配上")
+
+		输出:匹配上了
+易错点详解：
+很多人误以为是判断 target == b（20==10），实际完全不是。
+case b 里的 b 是新模式变量，不是外面提前定义好的变量 b；
+match-case 的 case 标识符只要是合法变量名，一律执行绑定操作，直接把 target=20 赋值给新变量 b，必定匹配成功，外层的 b=10 完全不参与判断。
+如果真的想用 case 匹配已有外部变量的值，不能直接写变量名，要用守卫 if 判断：
+		target = 20
+		b = 10
+		match target:
+			case val if val == b:
+				print("匹配上了")
+			case _:
+				print("没匹配上")

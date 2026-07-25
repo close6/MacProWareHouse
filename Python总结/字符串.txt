@@ -1,0 +1,75 @@
+1.转义字符
+		\：(在行尾时)	续行符
+			>>> print("line1 \
+								... line2 \
+								... line3")
+			line1 line2 line3
+
+		\a：响铃
+
+		\b：退格(Backspace)
+			>>> print("Hello \b World!")
+			Hello World!
+
+		\v：纵向制表符
+			>>> print("Hello \v World!")
+			Hello 
+						World!
+
+		\t	：横向制表符	
+			>>> print("Hello \t World!")
+			Hello      World!
+		
+		\r：回车，将 \r 后面的内容移到字符串开头，并逐一替换开头部分的字符，直至将 \r 后面的内容完全替换完成。	
+			>>> print("Hello\rWorld!")
+			World!
+			>>> print('google runoob taobao\r123456')
+			123456 runoob taobao
+
+		\f：换页	
+			>>> print("Hello \f World!")
+			Hello 
+						World!
+
+2.字符串运算符
+		r/R	原始字符串 - 原始字符串：所有的字符串都是直接按照字面的意思来使用，没有转义特殊或不能打印的字符。 原始字符串除在字符串的第一个引号前加上字母 r（可以大小写）以外，与普通字符串有着几乎完全相同的语法。	
+例如:print( r'\n' )
+		 print( R'\n' )
+
+3.字符串格式化
+	例如:print ("我叫 %s 今年 %d 岁!" % ('小明', 10))---------->%的左边是	包含占位符的字符串模版，右边是需要插入占位符的值
+	   %c	 格式化字符及其ASCII码
+       %s	 格式化字符串
+	   %u	 格式化无符号整型
+       %o	 格式化无符号八进制数
+       %x	 格式化无符号十六进制数
+       %X	 格式化无符号十六进制数（大写）
+	   %e	 用科学计数法格式化浮点数
+       %E	 作用同%e，用科学计数法格式化浮点数
+       %g	 %f和%e的简写
+       %G	 %f 和 %E 的简写
+       %p	 用十六进制数格式化变量的地址
+
+4.字符串内建函数(常用)
+	a.字符串查找与判断
+		find()功能：在字符串中查找子字符串，返回子字符串第一次出现的索引位置。如果找不到，返回 -1。
+		index()功能：与 find() 类似，在字符串中查找子字符串，但如果子字符串不存在，会引发 ValueError 异常。
+		startswith()功能：判断字符串是否以指定的子字符串开头，返回 True 或 False。
+		endswith()功能：判断字符串是否以指定的子字符串结尾，返回 True 或 False。
+
+	b.字符串修改与转换
+		replace()功能：将字符串中的指定子字符串替换为另一个字符串。s = "hello world";new_s = s.replace("world", "python")
+		upper()功能：将字符串中的所有小写字母转换为大写字母。
+		lower()功能：将字符串中的所有大写字母转换为小写字母。
+
+	c.字符串分割与合并
+		split()功能：根据指定的分隔符将字符串分割成列表。如果不指定分隔符，默认以空白字符（空格、制表符、换行符等）为分隔符。
+s = "apple,banana,orange";lst = s.split(",")-------->输出：['apple', 'banana', 'orange']
+		join()功能：将可迭代对象（如列表）中的字符串元素连接起来，使用调用 join() 方法的字符串作为分隔符。
+lst = ['apple', 'banana', 'orange'];s = ",".join(lst)--------->输出：apple,banana,orange
+
+	d.字符串去除空白字符
+		strip()功能：去除字符串两端的空白字符（空格、制表符、换行符等），返回处理后的新字符串。
+s = "   hello   \n";new_s = s.strip()
+		lstrip()功能：去除字符串左端的空白字符。
+		rstrip()功能：去除字符串右端的空白字符。

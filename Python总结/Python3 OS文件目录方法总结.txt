@@ -1,0 +1,683 @@
+Python3 OS 文件/目录方法总结：知识点、代码和输出
+这篇教程主要介绍 Python3 中 os 模块处理文件、目录、环境变量、系统命令和底层文件描述符的方法。下面按常用知识点整理，并为重点方法配上示例代码和输出结果。
+
+一、导入 os 模块
+	知识点：
+		os 是 Python 标准库中的操作系统接口模块。
+		使用 os 模块可以进行目录操作、文件操作、权限判断、环境变量读取、执行系统命令等。
+		os 模块具有跨平台特点，但某些方法只在 Unix、Windows 或 macOS 的特定环境中可用。
+	代码：
+		import os
+
+		print("os 模块导入成功")
+	输出：
+		os 模块导入成功
+
+二、getcwd() 获取当前工作目录
+	知识点：
+		os.getcwd() 用于返回当前工作目录。
+		当前工作目录可以理解为 Python 程序运行时“默认查找文件”的位置。
+	代码：
+		import os
+
+		print(os.getcwd())
+	输出：
+		/Users/nipeng/Documents/demo
+	说明：
+		实际输出会随你运行程序所在的目录不同而不同。
+
+三、chdir() 改变当前工作目录
+	知识点：
+		os.chdir(path) 用于切换当前工作目录。
+		切换后，相对路径会以新的工作目录为基准。
+	代码：
+		import os
+
+		print("切换前:", os.getcwd())
+		os.chdir("test_dir")
+		print("切换后:", os.getcwd())
+	输出：
+		切换前: /Users/nipeng/Documents/demo
+		切换后: /Users/nipeng/Documents/demo/test_dir
+	说明：
+		运行前需要先存在 test_dir 目录，否则会报 FileNotFoundError。
+
+四、listdir() 列出目录内容
+	知识点：
+		os.listdir(path='.') 用于列出指定目录下的文件和文件夹名称。
+		返回结果是列表，只包含名称，不自动拼接完整路径。
+	代码：
+		import os
+
+		print(os.listdir("."))
+	输出：
+		['a.txt', 'b.txt', 'images']
+	说明：
+		如果要得到完整路径，通常配合 os.path.join() 使用。
+
+五、mkdir() 创建单层目录
+	知识点：
+		os.mkdir(path) 用于创建一个目录。
+		如果目录已经存在，会抛出 FileExistsError。
+		它只能创建一层目录，不能一次创建多级不存在的目录。
+	代码：
+		import os
+
+		os.mkdir("new_directory")
+		print(os.path.exists("new_directory"))
+	输出：
+		True
+
+六、makedirs() 递归创建多级目录
+	知识点：
+		os.makedirs(path) 用于递归创建多级目录。
+		例如 a/b/c 都不存在时，makedirs() 可以一次创建出来。
+		常用参数 exist_ok=True 表示目录已存在时不报错。
+	代码：
+		import os
+
+		os.makedirs("project/data/images", exist_ok=True)
+		print(os.path.isdir("project/data/images"))
+	输出：
+		True
+	说明：
+		网页中写作 os.makedirs(path[, mode])，实际开发中常用 exist_ok=True。
+
+七、rmdir() 删除空目录
+	知识点：
+		os.rmdir(path) 用于删除空目录。
+		如果目录中还有文件或子目录，会抛出 OSError。
+	代码：
+		import os
+
+		os.mkdir("empty_dir")
+		os.rmdir("empty_dir")
+		print(os.path.exists("empty_dir"))
+	输出：
+		False
+
+八、removedirs() 递归删除空目录
+	知识点：
+		os.removedirs(path) 会从最里面的目录开始删除，并尝试向上删除空的父目录。
+		它只能删除空目录，遇到非空目录会停止或报错。
+	代码：
+		import os
+
+		os.makedirs("a/b/c", exist_ok=True)
+		os.removedirs("a/b/c")
+		print(os.path.exists("a"))
+	输出：
+		False
+	说明：
+		如果 a 或 b 中还有其他文件，父目录不会被删除。
+
+九、remove() 删除文件
+	知识点：
+		os.remove(path) 用于删除文件。
+		如果 path 是目录，会抛出 OSError。
+		如果文件不存在，会抛出 FileNotFoundError。
+	代码：
+		import os
+
+		with open("delete_me.txt", "w", encoding="utf-8") as f:
+			f.write("准备删除")
+
+		os.remove("delete_me.txt")
+		print(os.path.exists("delete_me.txt"))
+	输出：
+		False
+
+十、unlink() 删除文件
+	知识点：
+		os.unlink(path) 也用于删除文件。
+		在多数情况下，unlink() 和 remove() 效果相同。
+	代码：
+		import os
+
+		with open("temp.txt", "w", encoding="utf-8") as f:
+			f.write("临时文件")
+
+		os.unlink("temp.txt")
+		print(os.path.exists("temp.txt"))
+	输出：
+		False
+
+十一、rename() 重命名文件或目录
+	知识点：
+		os.rename(src, dst) 用于把文件或目录从旧名字改成新名字。
+		src 是原路径，dst 是目标路径。
+		在不同系统上，如果目标已存在，行为可能略有差异。
+	代码：
+		import os
+
+		with open("old_name.txt", "w", encoding="utf-8") as f:
+			f.write("hello")
+
+		os.rename("old_name.txt", "new_name.txt")
+		print(os.path.exists("new_name.txt"))
+	输出：
+		True
+
+十二、replace() 替换文件或目录名称
+	知识点：
+		os.replace(src, dst) 也可以重命名文件或目录。
+		和 rename() 相比，replace() 更强调“目标存在时进行替换”。
+		常用于用新文件安全覆盖旧文件。
+	代码：
+		import os
+
+		with open("old.txt", "w", encoding="utf-8") as f:
+			f.write("旧内容")
+
+		with open("new.txt", "w", encoding="utf-8") as f:
+			f.write("新内容")
+
+		os.replace("new.txt", "old.txt")
+
+		with open("old.txt", "r", encoding="utf-8") as f:
+			print(f.read())
+	输出：
+		新内容
+
+十三、renames() 递归重命名
+	知识点：
+		os.renames(old, new) 可以递归创建目标路径中缺失的中间目录，并移动或重命名文件。
+		它还会尝试删除旧路径中变空的目录。
+	代码：
+		import os
+
+		os.makedirs("old_dir", exist_ok=True)
+		with open("old_dir/a.txt", "w", encoding="utf-8") as f:
+			f.write("data")
+
+		os.renames("old_dir/a.txt", "new_dir/sub/a.txt")
+		print(os.path.exists("new_dir/sub/a.txt"))
+	输出：
+		True
+
+十四、access() 检查文件权限
+	知识点：
+		os.access(path, mode) 用于检查当前用户是否有某种权限。
+		常用 mode 有 os.F_OK、os.R_OK、os.W_OK、os.X_OK。
+		F_OK 判断路径是否存在，R_OK 判断是否可读，W_OK 判断是否可写，X_OK 判断是否可执行。
+	代码：
+		import os
+
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.write("abc")
+
+		print(os.access("demo.txt", os.F_OK))
+		print(os.access("demo.txt", os.R_OK))
+	输出：
+		True
+		True
+
+十五、stat() 获取文件状态信息
+	知识点：
+		os.stat(path) 用于获取文件或目录的状态信息。
+		返回对象中常用属性有 st_size 文件大小、st_mtime 修改时间、st_mode 权限和文件类型信息。
+	代码：
+		import os
+
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.write("Python")
+
+		info = os.stat("demo.txt")
+		print(info.st_size)
+	输出：
+		6
+	说明：
+		"Python" 一共 6 个字符，在 UTF-8 中也正好是 6 个字节。
+
+十六、lstat() 获取链接本身的信息
+	知识点：
+		os.lstat(path) 和 os.stat(path) 类似。
+		区别是：遇到符号链接时，lstat() 查看链接本身，stat() 通常查看链接指向的目标。
+	代码：
+		import os
+
+		with open("target.txt", "w", encoding="utf-8") as f:
+			f.write("abc")
+
+		os.symlink("target.txt", "link.txt")
+		print(os.lstat("link.txt").st_size)
+	输出：
+		10
+	说明：
+		这里 10 是 "target.txt" 这个链接目标字符串的长度。Windows 或权限受限环境可能无法直接创建符号链接。
+
+十七、chmod() 修改权限
+	知识点：
+		os.chmod(path, mode) 用于修改文件或目录权限。
+		在 Unix、Linux、macOS 中，常见写法是使用八进制权限，例如 0o644。
+	代码：
+		import os
+
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.write("abc")
+
+		os.chmod("demo.txt", 0o644)
+		print("权限修改完成")
+	输出：
+		权限修改完成
+	说明：
+		0o644 表示所有者可读写，用户组和其他用户只读。
+
+十八、chown() 修改文件所有者
+	知识点：
+		os.chown(path, uid, gid) 用于修改文件的用户 ID 和用户组 ID。
+		这个方法主要用于 Unix 系统，通常需要相应权限。
+	代码：
+		import os
+
+		print(hasattr(os, "chown"))
+	输出：
+		True
+	说明：
+		不同系统输出可能不同。普通学习阶段了解用途即可，不建议随意修改文件所有者。
+
+十九、getenv() 获取环境变量
+	知识点：
+		os.getenv(key) 用于读取环境变量。
+		如果环境变量不存在，默认返回 None。
+		也可以传第二个参数作为默认值。
+	代码：
+		import os
+
+		print(os.getenv("HOME", "没有 HOME"))
+	输出：
+		/Users/nipeng
+	说明：
+		Windows 上常见的用户目录环境变量可能是 USERPROFILE。
+
+二十、environ 读取和设置环境变量
+	知识点：
+		os.environ 是一个类似字典的对象，保存当前进程的环境变量。
+		可以通过 os.environ["KEY"] = "value" 给当前 Python 进程及其子进程设置环境变量。
+	代码：
+		import os
+
+		os.environ["APP_MODE"] = "dev"
+		print(os.getenv("APP_MODE"))
+	输出：
+		dev
+	说明：
+		这种设置通常只影响当前程序进程，不会永久写入系统环境变量。
+
+二十一、system() 执行系统命令
+	知识点：
+		os.system(command) 会把命令交给系统 shell 执行。
+		返回值通常是命令退出状态，而不是命令输出内容。
+		如果需要更安全、更灵活地执行命令，实际开发中更推荐 subprocess 模块。
+	代码：
+		import os
+
+		code = os.system("echo hello")
+		print(code)
+	输出：
+		hello
+		0
+	说明：
+		不要把用户输入直接拼接进 os.system()，否则可能带来命令注入风险。
+
+二十二、popen() 执行命令并读取输出
+	知识点：
+		os.popen(command) 会从命令打开一个管道，可以读取命令的输出。
+		它比 os.system() 更适合获取输出内容。
+		现代代码中仍然更推荐 subprocess.run()。
+	代码：
+		import os
+
+		result = os.popen("echo Python").read()
+		print(result.strip())
+	输出：
+		Python
+
+二十三、walk() 遍历目录树
+	知识点：
+		os.walk(top) 用于递归遍历目录树。
+		每次循环返回 root、dirs、files，分别表示当前目录路径、子目录列表、文件列表。
+		它非常适合查找某类文件、批量处理文件。
+	代码：
+		import os
+
+		os.makedirs("demo/a", exist_ok=True)
+		with open("demo/a/one.py", "w", encoding="utf-8") as f:
+			f.write("print('one')")
+		with open("demo/two.txt", "w", encoding="utf-8") as f:
+			f.write("two")
+
+		for root, dirs, files in os.walk("demo"):
+			for name in files:
+				if name.endswith(".py"):
+					print(os.path.join(root, name))
+	输出：
+		demo/a/one.py
+
+二十四、os.path 模块处理路径
+	知识点：
+		网页中把 os.path 模块归为常用方法，用于获取和判断文件属性信息。
+		os.path.join() 用于拼接路径，os.path.exists() 判断路径是否存在，os.path.isfile() 判断是否是文件，os.path.isdir() 判断是否是目录。
+		写跨平台代码时，不建议手动用 "/" 拼接路径。
+	代码：
+		import os
+
+		path = os.path.join("data", "demo.txt")
+		print(path)
+		print(os.path.exists(path))
+	输出：
+		data/demo.txt
+		False
+	说明：
+		Windows 上路径分隔符可能显示为 data\demo.txt。
+
+二十五、open()、read()、write()、close() 底层文件描述符操作
+	知识点：
+		os.open(file, flags[, mode]) 是更底层的打开文件方式，返回整数文件描述符 fd。
+		os.write(fd, bytes) 向文件描述符写入字节。
+		os.read(fd, n) 从文件描述符读取最多 n 个字节。
+		os.close(fd) 关闭文件描述符。
+		这些方法操作的是 bytes，不是普通字符串。
+	代码：
+		import os
+
+		fd = os.open("low.txt", os.O_CREAT | os.O_RDWR, 0o644)
+		os.write(fd, b"abcdef")
+		os.lseek(fd, 0, os.SEEK_SET)
+		print(os.read(fd, 3))
+		os.close(fd)
+	输出：
+		b'abc'
+	说明：
+		平时文件读写更推荐使用内置 open()；os.open() 适合需要底层控制的场景。
+
+二十六、lseek() 移动文件描述符位置
+	知识点：
+		os.lseek(fd, pos, how) 用于移动文件描述符的读写位置。
+		how 可以使用 os.SEEK_SET、os.SEEK_CUR、os.SEEK_END。
+		SEEK_SET 表示从文件开头计算，SEEK_CUR 表示从当前位置计算，SEEK_END 表示从文件末尾计算。
+	代码：
+		import os
+
+		fd = os.open("demo.txt", os.O_CREAT | os.O_RDWR, 0o644)
+		os.write(fd, b"Hello Python")
+		os.lseek(fd, 6, os.SEEK_SET)
+		print(os.read(fd, 6))
+		os.close(fd)
+	输出：
+		b'Python'
+
+二十七、fdopen() 把文件描述符转成文件对象
+	知识点：
+		os.fdopen(fd, mode) 可以把底层文件描述符包装成普通文件对象。
+		这样就可以继续使用 read()、write()、with 等更熟悉的文件对象操作。
+	代码：
+		import os
+
+		fd = os.open("demo.txt", os.O_CREAT | os.O_RDWR, 0o644)
+		with os.fdopen(fd, "w", encoding="utf-8") as f:
+			f.write("文件对象")
+
+		with open("demo.txt", "r", encoding="utf-8") as f:
+			print(f.read())
+	输出：
+		文件对象
+
+二十八、dup() 和 dup2() 复制文件描述符
+	知识点：
+		os.dup(fd) 会复制一个新的文件描述符。
+		os.dup2(fd, fd2) 会把 fd 复制到指定的 fd2。
+		这类方法常见于重定向标准输入、标准输出等底层场景。
+	代码：
+		import os
+
+		fd = os.open("demo.txt", os.O_CREAT | os.O_RDWR, 0o644)
+		copy_fd = os.dup(fd)
+		os.write(copy_fd, b"ABC")
+		os.close(copy_fd)
+		os.close(fd)
+
+		with open("demo.txt", "rb") as f:
+			print(f.read())
+	输出：
+		b'ABC'
+
+二十九、fsync() 和 fdatasync() 强制写入磁盘
+	知识点：
+		os.fsync(fd) 会强制把文件描述符对应文件的数据写入磁盘。
+		os.fdatasync(fd) 也用于同步数据，但不一定同步所有元数据。
+		这类方法常用于数据库、日志、关键数据落盘等场景。
+	代码：
+		import os
+
+		fd = os.open("important.txt", os.O_CREAT | os.O_WRONLY, 0o644)
+		os.write(fd, b"important data")
+		os.fsync(fd)
+		os.close(fd)
+		print("写入完成")
+	输出：
+		写入完成
+	说明：
+		fdatasync() 在部分系统上可能不可用。
+
+三十、ftruncate() 截断底层文件
+	知识点：
+		os.ftruncate(fd, length) 用于把文件描述符对应的文件截断到指定长度。
+		它是 file.truncate() 的底层版本。
+	代码：
+		import os
+
+		fd = os.open("demo.txt", os.O_CREAT | os.O_RDWR, 0o644)
+		os.write(fd, b"abcdef")
+		os.ftruncate(fd, 3)
+		os.lseek(fd, 0, os.SEEK_SET)
+		print(os.read(fd, 10))
+		os.close(fd)
+	输出：
+		b'abc'
+
+三十一、isatty() 判断文件描述符是否连接终端
+	知识点：
+		os.isatty(fd) 用于判断文件描述符是否连接到终端设备。
+		普通磁盘文件一般返回 False。
+	代码：
+		import os
+
+		fd = os.open("demo.txt", os.O_CREAT | os.O_RDWR, 0o644)
+		print(os.isatty(fd))
+		os.close(fd)
+	输出：
+		False
+
+三十二、pipe() 创建管道
+	知识点：
+		os.pipe() 会创建一对文件描述符，返回 (r, w)。
+		r 用于读取，w 用于写入。
+		管道常用于进程间通信。
+	代码：
+		import os
+
+		r, w = os.pipe()
+		os.write(w, b"hello")
+		os.close(w)
+		print(os.read(r, 5))
+		os.close(r)
+	输出：
+		b'hello'
+
+三十三、link() 创建硬链接
+	知识点：
+		os.link(src, dst) 用于创建硬链接。
+		硬链接可以理解为给同一个文件内容再起一个名字。
+		删除其中一个名字，另一个名字通常仍然可以访问同一份内容。
+	代码：
+		import os
+
+		with open("source.txt", "w", encoding="utf-8") as f:
+			f.write("硬链接")
+
+		os.link("source.txt", "hard_link.txt")
+
+		with open("hard_link.txt", "r", encoding="utf-8") as f:
+			print(f.read())
+	输出：
+		硬链接
+	说明：
+		硬链接在不同文件系统或部分平台上可能有限制。
+
+三十四、symlink() 和 readlink() 创建并读取软链接
+	知识点：
+		os.symlink(src, dst) 用于创建符号链接，也叫软链接。
+		os.readlink(path) 用于读取软链接指向的目标路径。
+		软链接更像一个“快捷方式”。
+	代码：
+		import os
+
+		with open("target.txt", "w", encoding="utf-8") as f:
+			f.write("目标文件")
+
+		os.symlink("target.txt", "shortcut.txt")
+		print(os.readlink("shortcut.txt"))
+	输出：
+		target.txt
+	说明：
+		Windows 中创建软链接可能需要管理员权限或开发者模式。
+
+三十五、getcwdb() 获取当前目录的 bytes 形式
+	知识点：
+		os.getcwdb() 返回当前工作目录的字节形式。
+		普通开发中更常用 os.getcwd()，getcwdb() 主要用于需要 bytes 路径的场景。
+	代码：
+		import os
+
+		print(type(os.getcwdb()).__name__)
+	输出：
+		bytes
+
+三十六、pathconf() 和 fpathconf() 获取系统配置信息
+	知识点：
+		os.pathconf(path, name) 返回与路径相关的系统配置值。
+		os.fpathconf(fd, name) 返回与打开文件描述符相关的系统配置值。
+		这些方法属于偏系统层的接口，普通文件操作不常用。
+	代码：
+		import os
+
+		print(os.pathconf(".", "PC_NAME_MAX") > 0)
+	输出：
+		True
+	说明：
+		PC_NAME_MAX 通常表示文件名最大长度。
+
+三十七、statvfs() 和 fstatvfs() 获取文件系统信息
+	知识点：
+		os.statvfs(path) 用于获取文件系统统计信息，例如块大小、可用空间等。
+		os.fstatvfs(fd) 是文件描述符版本。
+		这类方法常用于检查磁盘空间。
+	代码：
+		import os
+
+		info = os.statvfs(".")
+		print(info.f_bsize > 0)
+	输出：
+		True
+
+三十八、设备号相关方法 major()、minor()、makedev()
+	知识点：
+		os.major(device) 从设备号中提取主设备号。
+		os.minor(device) 从设备号中提取次设备号。
+		os.makedev(major, minor) 用主设备号和次设备号组合成设备号。
+		这些方法主要用于 Unix 设备文件相关场景。
+	代码：
+		import os
+
+		device = os.makedev(1, 3)
+		print(os.major(device))
+		print(os.minor(device))
+	输出：
+		1
+		3
+
+三十九、Windows 专用 startfile()
+	知识点：
+		os.startfile(path) 用于在 Windows 上用默认程序打开文件或文件夹。
+		例如打开 txt 文件、图片、目录等。
+		这个方法不是跨平台方法。
+	代码：
+		import os
+
+		print(hasattr(os, "startfile"))
+	输出：
+		False
+	说明：
+		在 Windows 上通常输出 True；在 macOS、Linux 上通常输出 False。
+
+四十、临时文件旧方法 tempnam()、tmpfile()、tmpnam()
+	知识点：
+		网页中提到 os.tempnam()、os.tmpfile()、os.tmpnam() 在 Python3 中已删除。
+		需要创建临时文件时，应使用 tempfile 模块。
+	代码：
+		import tempfile
+
+		with tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8") as f:
+			f.write("临时内容")
+			f.seek(0)
+			print(f.read())
+	输出：
+		临时内容
+
+四十一、os 模块方法分类速查
+	知识点：
+		目录操作：
+			getcwd()、getcwdb()、chdir()、listdir()、mkdir()、makedirs()、rmdir()、removedirs()、walk()
+		文件删除和重命名：
+			remove()、unlink()、rename()、renames()、replace()
+		路径和属性：
+			access()、stat()、lstat()、statvfs()、pathconf()、os.path 模块
+		权限和所有者：
+			chmod()、chown()、lchmod()、lchown()、chflags()、lchflags()
+		底层文件描述符：
+			open()、close()、closerange()、read()、write()、lseek()、fdopen()、dup()、dup2()
+		底层文件同步和截断：
+			fsync()、fdatasync()、ftruncate()、fstat()、fstatvfs()、fchmod()、fchown()、fchdir()、fpathconf()
+		链接：
+			link()、symlink()、readlink()
+		管道和终端：
+			pipe()、openpty()、isatty()、ttyname()、tcgetpgrp()、tcsetpgrp()
+		设备号：
+			major()、minor()、makedev()、mknod()、mkfifo()
+		命令执行：
+			system()、popen()
+		平台相关或不推荐：
+			startfile() 是 Windows 常用方法；tempnam()、tmpfile()、tmpnam() 在 Python3 中已删除。
+
+四十二、学习时最容易混淆的几组方法
+	知识点：
+		1. os.mkdir() 和 os.makedirs()
+			mkdir() 创建单层目录；makedirs() 可以创建多级目录。
+		2. os.rmdir() 和 os.removedirs()
+			rmdir() 删除一个空目录；removedirs() 会向上递归删除空父目录。
+		3. os.remove() 和 os.unlink()
+			两者都用于删除文件，常见效果基本相同。
+		4. os.rename() 和 os.replace()
+			rename() 偏重重命名；replace() 偏重目标存在时替换。
+		5. 内置 open() 和 os.open()
+			内置 open() 返回文件对象，更适合日常读写；os.open() 返回文件描述符，更底层。
+		6. os.stat() 和 os.lstat()
+			stat() 通常跟随软链接查看目标；lstat() 查看软链接本身。
+
+总结
+	本章节的重点可以概括为：
+	1. os 模块用于让 Python 程序和操作系统交互。
+	2. getcwd()、chdir()、listdir() 是目录定位和查看的基础方法。
+	3. mkdir()、makedirs() 用于创建目录，rmdir()、removedirs() 用于删除空目录。
+	4. remove() 和 unlink() 用于删除文件，rename()、renames()、replace() 用于重命名或替换。
+	5. access() 用于检查权限，stat() 用于获取文件大小、修改时间等状态信息。
+	6. getenv() 和 environ 用于读取或设置环境变量。
+	7. system() 和 popen() 可以执行系统命令，但实际开发中更推荐 subprocess。
+	8. walk() 是递归遍历目录树的常用工具，适合查找文件和批量处理。
+	9. os.path 模块用于路径拼接、存在性判断、文件类型判断，是写跨平台路径代码的重点。
+	10. os.open()、os.read()、os.write()、os.close() 等方法属于底层文件描述符操作，日常文件读写优先使用内置 open()。
+	11. chmod()、chown()、link()、symlink()、pipe()、statvfs() 等方法偏系统层，学习时了解用途即可。
+	12. tempnam()、tmpfile()、tmpnam() 在 Python3 中已删除，临时文件应使用 tempfile 模块。
+
+整体来看，这篇教程的核心是：用 os 模块管理文件和目录，用 os.path 处理路径，用环境变量和系统命令与操作系统交互。初学阶段重点掌握 getcwd()、chdir()、listdir()、mkdir()、makedirs()、remove()、rename()、walk()、os.path；底层文件描述符和平台相关方法可以先知道用途，等需要系统编程时再深入。

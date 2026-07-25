@@ -1,0 +1,368 @@
+Python3 File(文件) 方法总结：知识点、代码和输出
+这篇教程主要介绍 Python3 中 open() 打开文件的方式、文件打开模式，以及 file 对象常用方法。下面按知识点整理，并为每个知识点配上示例代码和输出结果。
+
+一、使用 open() 打开文件
+	知识点：
+		open(file, mode='r', encoding=None) 用于打开文件，并返回文件对象。
+		file 表示文件路径，mode 表示打开模式，encoding 常用于指定文本编码。
+		如果文件无法打开，程序会抛出 OSError。
+	代码：
+		f = open("demo.txt", "w", encoding="utf-8")
+		f.write("Hello File")
+		f.close()
+		print("写入完成")
+	输出：
+		写入完成
+	说明：
+		程序会创建 demo.txt 文件，并写入：
+		Hello File
+
+二、使用 with open() 自动关闭文件
+	知识点：
+		使用 open() 后需要关闭文件。推荐使用 with open(...) as f，它会在代码块结束后自动关闭文件。
+	代码：
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.write("Python 文件方法")
+
+		with open("demo.txt", "r", encoding="utf-8") as f:
+			print(f.read())
+	输出：
+		Python 文件方法
+
+三、r 模式只读文件
+	知识点：
+		r 表示只读模式，是 open() 的默认模式。
+		使用 r 模式时，文件必须已经存在，否则会报错。
+	代码：
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.write("只读模式")
+
+		with open("demo.txt", "r", encoding="utf-8") as f:
+			print(f.read())
+	输出：
+		只读模式
+
+四、w 模式写入文件
+	知识点：
+		w 表示写入模式。如果文件不存在，会创建新文件。
+		如果文件已经存在，会先清空原来的内容，再写入新内容。
+	代码：
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.write("旧内容")
+
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.write("新内容")
+
+		with open("demo.txt", "r", encoding="utf-8") as f:
+			print(f.read())
+	输出：
+		新内容
+
+五、a 模式追加文件
+	知识点：
+		a 表示追加模式。如果文件已存在，新的内容会写到文件末尾。
+		如果文件不存在，会创建新文件。
+	代码：
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.write("第一行\n")
+
+		with open("demo.txt", "a", encoding="utf-8") as f:
+			f.write("第二行\n")
+
+		with open("demo.txt", "r", encoding="utf-8") as f:
+			print(f.read(), end="")
+	输出：
+		第一行
+		第二行
+
+六、x 模式新建文件
+	知识点：
+		x 表示新建写入模式。只有文件不存在时才能创建。
+		如果文件已经存在，会抛出 FileExistsError。
+	代码：
+		with open("new_file.txt", "x", encoding="utf-8") as f:
+			f.write("只允许新建一次")
+
+		print("创建成功")
+	输出：
+		创建成功
+	说明：
+		如果 new_file.txt 已经存在，再运行这段代码会报错：
+		FileExistsError
+
+七、b 模式处理二进制文件
+	知识点：
+		b 表示二进制模式，常用于图片、音频、视频等非文本文件。
+		二进制模式读写的是 bytes，不是普通字符串。
+	代码：
+		with open("demo.bin", "wb") as f:
+			f.write(b"ABC")
+
+		with open("demo.bin", "rb") as f:
+			print(f.read())
+	输出：
+		b'ABC'
+
+八、+ 模式同时读写文件
+	知识点：
+		+ 表示可读可写，例如 r+、w+、a+。
+		w+ 会清空原文件，写入后如果要读取，通常需要先用 seek(0) 把文件指针移回开头。
+	代码：
+		with open("demo.txt", "w+", encoding="utf-8") as f:
+			f.write("读写模式")
+			f.seek(0)
+			print(f.read())
+	输出：
+		读写模式
+
+九、close() 关闭文件
+	知识点：
+		close() 用于关闭文件。关闭后的文件对象不能再继续读写。
+		实际开发中更推荐使用 with open() 自动关闭。
+	代码：
+		f = open("demo.txt", "w", encoding="utf-8")
+		f.write("关闭文件")
+		f.close()
+		print(f.closed)
+	输出：
+		True
+
+十、write() 写入字符串
+	知识点：
+		write(str) 用于向文件写入字符串，并返回写入的字符数。
+		它不会自动换行，如果需要换行，要自己写入 \n。
+	代码：
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			n = f.write("Python")
+
+		print(n)
+	输出：
+		6
+
+十一、writelines() 写入字符串序列
+	知识点：
+		writelines(sequence) 可以把字符串列表等序列写入文件。
+		writelines() 不会自动添加换行符，需要自己在字符串中写 \n。
+	代码：
+		lines = ["第一行\n", "第二行\n", "第三行\n"]
+
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.writelines(lines)
+
+		with open("demo.txt", "r", encoding="utf-8") as f:
+			print(f.read(), end="")
+	输出：
+		第一行
+		第二行
+		第三行
+
+十二、read() 读取文件内容
+	知识点：
+		read([size]) 用于读取文件内容。
+		不传 size 或 size 为负数时，会读取全部内容；传入 size 时，会读取指定数量的字符或字节。
+	代码：
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.write("abcdef")
+
+		with open("demo.txt", "r", encoding="utf-8") as f:
+			print(f.read(3))
+			print(f.read())
+	输出：
+		abc
+		def
+
+十三、readline() 读取一行
+	知识点：
+		readline([size]) 用于读取一整行内容，通常会包含行尾的 \n。
+		每调用一次 readline()，文件指针就向后移动一行。
+	代码：
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.write("第一行\n第二行\n第三行\n")
+
+		with open("demo.txt", "r", encoding="utf-8") as f:
+			print(f.readline(), end="")
+			print(f.readline(), end="")
+	输出：
+		第一行
+		第二行
+
+十四、readlines() 读取所有行
+	知识点：
+		readlines([sizeint]) 会读取多行内容，并返回一个列表。
+		列表中的每个元素通常是一行字符串。
+	代码：
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.write("第一行\n第二行\n")
+
+		with open("demo.txt", "r", encoding="utf-8") as f:
+			print(f.readlines())
+	输出：
+		['第一行\n', '第二行\n']
+
+十五、直接遍历文件对象
+	知识点：
+		文件对象可以直接用 for 循环遍历。
+		这种方式适合逐行处理大文件，因为不需要一次性把所有内容读入内存。
+	代码：
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.write("苹果\n香蕉\n橙子\n")
+
+		with open("demo.txt", "r", encoding="utf-8") as f:
+			for line in f:
+				print(line, end="")
+	输出：
+		苹果
+		香蕉
+		橙子
+
+十六、tell() 查看文件指针位置
+	知识点：
+		tell() 返回文件当前读写位置。
+		在二进制模式下，位置通常可以理解为已经读过或写过的字节数。
+	代码：
+		with open("demo.txt", "wb") as f:
+			f.write(b"Hello Python")
+
+		with open("demo.txt", "rb") as f:
+			print(f.read(5))
+			print(f.tell())
+	输出：
+		b'Hello'
+		5
+
+十七、seek() 移动文件指针
+	知识点：
+		seek(offset[, whence]) 用于移动文件指针。
+		常见用法是 seek(0)，表示回到文件开头。
+	代码：
+		with open("demo.txt", "w+", encoding="utf-8") as f:
+			f.write("Hello Python")
+			f.seek(6)
+			print(f.read())
+	输出：
+		Python
+
+十八、truncate() 截断文件
+	知识点：
+		truncate([size]) 用于把文件截断到指定长度。
+		如果不传 size，通常会从当前文件指针位置截断，后面的内容会被删除。
+	代码：
+		with open("demo.txt", "w+", encoding="utf-8") as f:
+			f.write("abcdef")
+			f.truncate(3)
+			f.seek(0)
+			print(f.read())
+	输出：
+		abc
+
+十九、flush() 刷新缓冲区
+	知识点：
+		flush() 会把文件缓冲区中的内容立即写入文件。
+		它常用于希望数据马上落盘，或者程序还没有关闭文件但另一个地方需要读取最新内容的情况。
+	代码：
+		f = open("demo.txt", "w", encoding="utf-8")
+		f.write("立即写入")
+		f.flush()
+		print("刷新完成")
+		f.close()
+	输出：
+		刷新完成
+
+二十、fileno() 获取文件描述符
+	知识点：
+		fileno() 返回文件对象对应的整数文件描述符。
+		这个值常用于 os 模块等更底层的文件操作。
+	代码：
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			fd = f.fileno()
+			print(isinstance(fd, int))
+	输出：
+		True
+
+二十一、isatty() 判断是否连接终端
+	知识点：
+		isatty() 用于判断文件对象是否连接到终端设备。
+		普通磁盘文件一般返回 False。
+	代码：
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			print(f.isatty())
+	输出：
+		False
+
+二十二、Python3 中使用 next() 读取下一行
+	知识点：
+		教程中提到 Python3 的 File 对象不支持 file.next() 方法。
+		在 Python3 中，如果想读取下一行，可以使用内置函数 next(f)。
+	代码：
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.write("第一行\n第二行\n")
+
+		with open("demo.txt", "r", encoding="utf-8") as f:
+			print(next(f), end="")
+			print(next(f), end="")
+	输出：
+		第一行
+		第二行
+
+二十三、文本模式和二进制模式的区别
+	知识点：
+		文本模式默认使用字符串 str，需要指定或使用默认编码。
+		二进制模式使用字节 bytes，不需要 encoding 参数。
+	代码：
+		with open("text.txt", "w", encoding="utf-8") as f:
+			f.write("A")
+
+		with open("text.txt", "r", encoding="utf-8") as f:
+			print(type(f.read()).__name__)
+
+		with open("data.bin", "wb") as f:
+			f.write(b"A")
+
+		with open("data.bin", "rb") as f:
+			print(type(f.read()).__name__)
+	输出：
+		str
+		bytes
+
+二十四、常用文件模式对比
+	知识点：
+		r：只读，文件必须存在。
+		w：只写，文件不存在会创建，文件存在会清空。
+		a：追加，内容写到文件末尾。
+		x：新建，文件存在会报错。
+		b：二进制模式，例如 rb、wb。
+		+：读写模式，例如 r+、w+、a+。
+	代码：
+		modes = {
+			"r": "只读",
+			"w": "写入并清空",
+			"a": "追加",
+			"x": "新建",
+			"b": "二进制",
+			"+": "读写"
+		}
+
+		for mode, meaning in modes.items():
+			print(mode, meaning)
+	输出：
+		r 只读
+		w 写入并清空
+		a 追加
+		x 新建
+		b 二进制
+		+ 读写
+
+总结
+	本章节的重点可以概括为：
+	1. open() 用于打开文件，并返回文件对象。
+	2. 打开文件后要关闭，推荐使用 with open() 自动管理关闭。
+	3. r、w、a、x 分别表示只读、写入、追加、新建。
+	4. b 表示二进制模式，+ 表示读写模式。
+	5. read()、readline()、readlines() 用于读取文件内容。
+	6. write()、writelines() 用于写入文件内容。
+	7. seek() 可以移动文件指针，tell() 可以查看当前位置。
+	8. truncate() 可以截断文件，flush() 可以刷新缓冲区。
+	9. fileno() 和 isatty() 属于更底层或特殊场景的方法，了解即可。
+	10. Python3 中不要使用 file.next()，要使用 next(file)。
+
+整体来看，这篇教程是学习 Python 文件操作的基础内容，重点要掌握 open() 的模式、文件读写方法，以及用 with open() 安全地管理文件。

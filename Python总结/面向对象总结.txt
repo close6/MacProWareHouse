@@ -1,0 +1,313 @@
+Python3 面向对象精简总结：知识点、代码和输出
+这篇教程主要介绍 Python3 的类、对象、构造方法、self、继承、方法重写、私有属性/方法和运算符重载。下面按核心知识点精简整理。
+
+一、面向对象基本概念
+	知识点：
+		类 Class：一类事物的模板，定义属性和方法。
+		对象 Object：由类创建出来的具体实例。
+		属性：对象保存的数据。
+		方法：类中定义的函数，用来描述对象的行为。
+		实例化：根据类创建对象的过程。
+	代码：
+		class Dog:
+			name = "小黑"
+
+			def bark(self):
+				print("汪汪")
+
+		dog = Dog()
+		print(dog.name)
+		dog.bark()
+	输出：
+		小黑
+		汪汪
+
+二、定义类和创建对象
+	知识点：
+		使用 class 定义类。
+		类名通常使用大驼峰命名法，例如 MyClass、Student。
+		通过 类名() 可以创建对象。
+	代码：
+		class MyClass:
+			i = 12345
+
+			def f(self):
+				return "hello world"
+
+		x = MyClass()
+		print(x.i)
+		print(x.f())
+	输出：
+		12345
+		hello world
+
+三、__init__() 构造方法
+	知识点：
+		__init__() 是构造方法，在创建对象时自动调用。
+		常用于给对象初始化属性。
+		__init__() 的第一个参数通常是 self。
+	代码：
+		class Student:
+			def __init__(self, name, age):
+				self.name = name
+				self.age = age
+
+		s = Student("小明", 18)
+		print(s.name)
+		print(s.age)
+	输出：
+		小明
+		18
+
+四、self 表示当前对象
+	知识点：
+		self 代表当前实例对象。
+		通过 self 可以在方法内部访问对象自己的属性和方法。
+		self 不是 Python 关键字，但约定俗成必须这样写，代码更清晰。
+	代码：
+		class Person:
+			def __init__(self, name):
+				self.name = name
+
+			def say(self):
+				print(self.name + " 正在说话")
+
+		p = Person("小红")
+		p.say()
+	输出：
+		小红 正在说话
+
+五、实例变量和类变量
+	知识点：
+		实例变量属于具体对象，一般写成 self.xxx。
+		类变量属于类，多个对象共享。
+		如果每个对象的值可能不同，通常用实例变量。
+	代码：
+		class Student:
+			school = "Python 学校"
+
+			def __init__(self, name):
+				self.name = name
+
+		a = Student("小明")
+		b = Student("小红")
+		print(a.name, a.school)
+		print(b.name, b.school)
+	输出：
+		小明 Python 学校
+		小红 Python 学校
+
+六、类的方法
+	知识点：
+		类中的函数叫方法。
+		实例方法的第一个参数必须接收当前对象，通常命名为 self。
+		调用时写成 对象.方法()，不需要手动传 self。
+	代码：
+		class People:
+			def __init__(self, name, age):
+				self.name = name
+				self.age = age
+
+			def speak(self):
+				print("%s 说：我 %d 岁。" % (self.name, self.age))
+
+		p = People("runoob", 10)
+		p.speak()
+	输出：
+		runoob 说：我 10 岁。
+
+七、继承
+	知识点：
+		继承可以让子类复用父类的属性和方法。
+		语法：class 子类名(父类名):
+		子类也叫派生类，父类也叫基类。
+	代码：
+		class People:
+			def speak(self):
+				print("我是一个人")
+
+		class Student(People):
+			pass
+
+		s = Student()
+		s.speak()
+	输出：
+		我是一个人
+
+八、子类调用父类构造方法
+	知识点：
+		子类有自己的 __init__() 时，如果还想初始化父类属性，需要调用父类构造方法。
+		常用写法是 super().__init__(参数)。
+	代码：
+		class People:
+			def __init__(self, name, age):
+				self.name = name
+				self.age = age
+
+		class Student(People):
+			def __init__(self, name, age, grade):
+				super().__init__(name, age)
+				self.grade = grade
+
+		s = Student("ken", 10, 3)
+		print(s.name, s.age, s.grade)
+	输出：
+		ken 10 3
+
+九、方法重写
+	知识点：
+		如果父类方法不能满足子类需求，子类可以重新定义同名方法。
+		这叫方法重写，也叫方法覆盖。
+		子类对象调用时，会优先执行子类自己的方法。
+	代码：
+		class Parent:
+			def say(self):
+				print("父类方法")
+
+		class Child(Parent):
+			def say(self):
+				print("子类方法")
+
+		c = Child()
+		c.say()
+	输出：
+		子类方法
+
+十、使用 super() 调用父类方法
+	知识点：
+		super() 可以在子类中调用父类的方法。
+		常用于：子类扩展父类功能，而不是完全替换父类功能。
+	代码：
+		class Parent:
+			def say(self):
+				print("父类方法")
+
+		class Child(Parent):
+			def say(self):
+				print("子类方法")
+				super().say()
+
+		c = Child()
+		c.say()
+	输出：
+		子类方法
+		父类方法
+
+十一、多继承
+	知识点：
+		Python 支持多继承。
+		语法：class 子类(父类1, 父类2):
+		如果多个父类有同名方法，Python 会按继承顺序从左到右查找。
+	代码：
+		class Speaker:
+			def speak(self):
+				print("我是演说家")
+
+		class Student:
+			def study(self):
+				print("我在学习")
+
+		class Person(Speaker, Student):
+			pass
+
+		p = Person()
+		p.speak()
+		p.study()
+	输出：
+		我是演说家
+		我在学习
+
+十二、私有属性
+	知识点：
+		两个下划线开头的属性是私有属性，例如 __weight。
+		私有属性不能在类外部直接访问，通常只能在类内部方法中使用。
+	代码：
+		class Person:
+			def __init__(self, name, weight):
+				self.name = name
+				self.__weight = weight
+
+			def show_weight(self):
+				print(self.__weight)
+
+		p = Person("小明", 60)
+		print(p.name)
+		p.show_weight()
+	输出：
+		小明
+		60
+
+十三、私有方法
+	知识点：
+		两个下划线开头的方法是私有方法，例如 __foo()。
+		私有方法不能在类外部直接调用，通常由类内部的公共方法间接调用。
+	代码：
+		class Site:
+			def __foo(self):
+				print("这是私有方法")
+
+			def foo(self):
+				print("这是公共方法")
+				self.__foo()
+
+		s = Site()
+		s.foo()
+	输出：
+		这是公共方法
+		这是私有方法
+
+十四、常见专有方法
+	知识点：
+		Python 中很多双下划线方法有特殊用途。
+		__init__：创建对象时初始化。
+		__str__：print 对象时显示的字符串。
+		__len__：让对象支持 len()。
+		__add__：让对象支持 + 运算。
+	代码：
+		class Person:
+			def __init__(self, name):
+				self.name = name
+
+			def __str__(self):
+				return "姓名：" + self.name
+
+		p = Person("小明")
+		print(p)
+	输出：
+		姓名：小明
+
+十五、运算符重载
+	知识点：
+		运算符重载就是通过专有方法改变对象参与运算时的行为。
+		例如定义 __add__() 后，对象就可以使用 +。
+	代码：
+		class Vector:
+			def __init__(self, a, b):
+				self.a = a
+				self.b = b
+
+			def __str__(self):
+				return "Vector(%d, %d)" % (self.a, self.b)
+
+			def __add__(self, other):
+				return Vector(self.a + other.a, self.b + other.b)
+
+		v1 = Vector(2, 10)
+		v2 = Vector(5, -2)
+		print(v1 + v2)
+	输出：
+		Vector(7, 8)
+
+总结
+	本章节的重点可以概括为：
+	1. 类是模板，对象是类创建出来的实例。
+	2. class 用于定义类，类中可以包含属性和方法。
+	3. __init__() 是构造方法，创建对象时自动执行。
+	4. self 表示当前对象，实例变量通常写成 self.xxx。
+	5. 继承可以让子类复用父类代码。
+	6. 子类可以重写父类方法，也可以用 super() 调用父类方法。
+	7. Python 支持多继承，同名方法按继承顺序从左到右查找。
+	8. 两个下划线开头的属性和方法表示私有，类外部不能直接访问。
+	9. __str__、__add__ 等专有方法可以让对象支持打印、加法等特殊行为。
+
+整体来看，这篇教程的核心是：用类把数据和行为封装在一起，用对象表示具体事物，用继承复用代码，用重写和专有方法定制对象行为。初学阶段重点掌握 class、对象创建、__init__、self、继承、方法重写和私有属性即可。

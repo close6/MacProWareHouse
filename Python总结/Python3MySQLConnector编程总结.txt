@@ -1,0 +1,174 @@
+Python3 MySQL Connector 编程精简总结：知识点、代码和输出
+这篇总结主要介绍 Connector/Python 的安装、数据库连接、建库建表、增删改查、事务和安全写法。下面按核心知识点精简整理。
+
+一、安装与导入
+	知识点：
+		Connector/Python 是 MySQL 官方 Python 驱动，Python 通过它向 MySQL 发送 SQL。
+		官方安装包名是 mysql-connector-python；代码中导入 mysql.connector。
+		运行代码前，必须先安装并启动 MySQL Server。
+	代码：
+		python -m pip install mysql-connector-python
+		python -c "import mysql.connector; print(mysql.connector.__version__)"
+	输出：
+		显示版本号且没有报错，说明安装成功。
+
+二、连接数据库
+	知识点：
+		connect() 建立连接；host、user、password、database 分别指定主机、用户、密码和数据库。
+		教程中的 passwd 仍可见，但新代码建议使用更清晰的 password。
+		生产环境不要把密码写死在代码中，应使用环境变量或配置文件。
+	代码：
+		import mysql.connector
+
+		db = mysql.connector.connect(
+			host="localhost",
+			user="root",
+			password="你的密码",
+			database="runoob_db"
+		)
+		print(db.is_connected())
+	输出：
+		True
+
+三、创建数据库和数据表
+	知识点：
+		cursor() 创建游标，execute() 执行一条 SQL。
+		CREATE DATABASE 创建数据库；CREATE TABLE 创建表。
+		主键应唯一；AUTO_INCREMENT 让整数主键自动递增。
+	代码：
+		cursor = db.cursor()
+		cursor.execute("""
+			CREATE TABLE IF NOT EXISTS sites (
+				id INT AUTO_INCREMENT PRIMARY KEY,
+				name VARCHAR(255) NOT NULL,
+				url VARCHAR(255) NOT NULL
+			)
+		""")
+	输出：
+		创建 sites 表；表已存在时不会报错。
+
+四、插入数据
+	知识点：
+		INSERT INTO 插入记录；%s 是参数占位符，值通过 execute() 的第二个参数传入。
+		不要用字符串拼接组装 SQL，否则可能产生 SQL 注入。
+		增、删、改后必须 commit()，事务才会真正保存。
+	代码：
+		sql = "INSERT INTO sites (name, url) VALUES (%s, %s)"
+		value = ("RUNOOB", "https://www.runoob.com")
+		cursor.execute(sql, value)
+		db.commit()
+		print(cursor.rowcount, cursor.lastrowid)
+	输出：
+		1 1
+		表示插入 1 条记录，新记录 id 为 1。
+
+五、批量插入
+	知识点：
+		executemany() 用同一条 SQL 插入多组数据，比逐条 execute() 更简洁。
+		第二个参数是由元组组成的列表。
+	代码：
+		values = [
+			("Google", "https://www.google.com"),
+			("GitHub", "https://github.com")
+		]
+		cursor.executemany(
+			"INSERT INTO sites (name, url) VALUES (%s, %s)",
+			values
+		)
+		db.commit()
+		print(cursor.rowcount)
+	输出：
+		2
+
+六、查询数据
+	知识点：
+		SELECT 指定查询字段；fetchone() 取一条，fetchall() 取全部。
+		WHERE 过滤，ORDER BY 排序，LIMIT 限制数量，OFFSET 指定起点。
+		只查询需要的字段；大量数据不要一次 fetchall() 全部载入内存。
+	代码：
+		sql = """
+			SELECT id, name, url
+			FROM sites
+			WHERE name = %s
+			ORDER BY id DESC
+			LIMIT 3
+		"""
+		cursor.execute(sql, ("RUNOOB",))
+		for row in cursor.fetchall():
+			print(row)
+	输出：
+		(1, 'RUNOOB', 'https://www.runoob.com')
+
+七、更新数据
+	知识点：
+		UPDATE 修改已有记录；SET 指定新值，WHERE 限定目标记录。
+		忘写 WHERE 会更新整张表；执行前必须确认条件。
+		rowcount 表示受影响的记录数。
+	代码：
+		sql = "UPDATE sites SET name = %s WHERE id = %s"
+		cursor.execute(sql, ("菜鸟教程", 1))
+		db.commit()
+		print(cursor.rowcount)
+	输出：
+		1
+
+八、删除记录和数据表
+	知识点：
+		DELETE FROM 删除记录，同样必须用 WHERE 限定范围。
+		DROP TABLE 删除整张表；IF EXISTS 可避免表不存在时报错。
+		删除操作通常不可逆，重要数据应先备份。
+	代码：
+		cursor.execute("DELETE FROM sites WHERE id = %s", (1,))
+		db.commit()
+		print(cursor.rowcount)
+
+		# 确认确实要删除整张表时才执行：
+		# cursor.execute("DROP TABLE IF EXISTS sites")
+	输出：
+		1
+
+九、事务与异常处理
+	知识点：
+		同一事务中的多次修改应全部成功或全部失败。
+		成功时 commit()；异常时 rollback() 撤销本次未提交修改。
+		游标和连接使用完要 close()，finally 可保证资源被释放。
+	代码：
+		import mysql.connector
+
+		db = None
+		cursor = None
+		try:
+			db = mysql.connector.connect(
+				host="localhost", user="root",
+				password="你的密码", database="runoob_db"
+			)
+			cursor = db.cursor()
+			cursor.execute(
+				"UPDATE sites SET url = %s WHERE id = %s",
+				("https://www.runoob.com", 1)
+			)
+			db.commit()
+		except mysql.connector.Error as err:
+			if db:
+				db.rollback()
+			print("数据库错误：", err)
+		finally:
+			if cursor:
+				cursor.close()
+			if db and db.is_connected():
+				db.close()
+	输出：
+		成功则保存修改；失败则回滚并输出错误信息。
+
+十、核心注意事项
+	知识点：
+		安装 mysql-connector-python，不要混淆包名和导入名。
+		用户输入必须通过 %s 占位符传参；占位符不要加引号。
+		单个参数也要写成元组，如 ("RUNOOB",)。
+		INSERT、UPDATE、DELETE 后记得 commit()；失败时 rollback()。
+		UPDATE、DELETE 必须仔细检查 WHERE，避免误改或误删整表。
+		及时关闭 cursor 和连接；正式项目可使用连接池。
+		使用最新版 Connector/Python 适配 MySQL 8.0+，不要为旧驱动主动降低数据库认证安全性。
+
+十一、完整思路
+	安装驱动 → 启动 MySQL → connect() 连接 → cursor() 创建游标 → execute()/executemany() 执行 SQL → 查询用 fetchone()/fetchall() → 修改用 commit() → 出错用 rollback() → close() 释放资源。

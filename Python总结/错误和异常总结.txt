@@ -1,0 +1,340 @@
+Python3 错误和异常精简总结：知识点、代码和输出
+这篇教程主要介绍 Python3 中的语法错误、异常、try/except、else、finally、raise、自定义异常和 with 清理资源。下面按核心知识点精简整理。
+
+一、语法错误和异常
+	知识点：
+		语法错误 SyntaxError：代码写法不符合 Python 语法，程序无法正常解析。
+		异常 Exception：语法没问题，但程序运行过程中出错。
+		语法错误通常要修改代码；异常可以用 try/except 捕获处理。
+	代码：
+		# 错误写法：
+		# while True print("Hello")
+
+		# 正确写法：
+		while True:
+			print("Hello")
+			break
+	输出：
+		Hello
+
+二、常见异常类型
+	知识点：
+		ZeroDivisionError：除数为 0。
+		NameError：变量名或函数名未定义。
+		TypeError：数据类型不合适。
+		ValueError：类型正确，但值不合适。
+		FileNotFoundError：文件不存在。
+	代码：
+		errors = [
+			"ZeroDivisionError",
+			"NameError",
+			"TypeError",
+			"ValueError",
+			"FileNotFoundError"
+		]
+
+		for name in errors:
+			print(name)
+	输出：
+		ZeroDivisionError
+		NameError
+		TypeError
+		ValueError
+		FileNotFoundError
+
+三、try/except 捕获异常
+	知识点：
+		try 中放可能出错的代码。
+		except 中放异常发生后的处理代码。
+		如果 try 中没有异常，except 不会执行。
+	代码：
+		try:
+			num = int("abc")
+		except ValueError:
+			print("转换失败")
+	输出：
+		转换失败
+
+四、捕获指定异常
+	知识点：
+		except 后面可以写具体异常类型。
+		推荐捕获具体异常，这样代码更清楚，也不容易隐藏 bug。
+	代码：
+		try:
+			print(10 / 0)
+		except ZeroDivisionError:
+			print("不能除以 0")
+	输出：
+		不能除以 0
+
+五、多个 except
+	知识点：
+		一个 try 可以写多个 except。
+		Python 会从上到下匹配异常类型，匹配成功后只执行一个 except。
+	代码：
+		try:
+			print(10 / int("0"))
+		except ValueError:
+			print("转换失败")
+		except ZeroDivisionError:
+			print("除数不能为 0")
+	输出：
+		除数不能为 0
+
+六、一个 except 捕获多个异常
+	知识点：
+		如果多个异常处理方式一样，可以把异常类型写成元组。
+		格式：except (异常1, 异常2):
+	代码：
+		try:
+			x = int("abc")
+			print(10 / x)
+		except (ValueError, ZeroDivisionError):
+			print("输入不合法")
+	输出：
+		输入不合法
+
+七、as e 获取异常对象
+	知识点：
+		except 异常类型 as e 可以得到异常对象。
+		e 中通常包含错误原因，适合打印提示或记录日志。
+	代码：
+		try:
+			open("not_exists.txt", "r", encoding="utf-8")
+		except FileNotFoundError as e:
+			print(type(e).__name__)
+			print("文件不存在")
+	输出：
+		FileNotFoundError
+		文件不存在
+
+八、Exception 捕获大多数普通异常
+	知识点：
+		Exception 是大多数普通异常的父类。
+		except Exception as e 可以作为兜底处理。
+		不要随便使用空 except，因为它会捕获太多内容，容易隐藏问题。
+	代码：
+		try:
+			print(undefined_name)
+		except Exception as e:
+			print(type(e).__name__)
+	输出：
+		NameError
+
+九、try/except/else
+	知识点：
+		else 放在 except 后面。
+		只有 try 中没有发生异常时，else 才会执行。
+		适合放“成功后才执行”的代码。
+	代码：
+		try:
+			num = int("100")
+		except ValueError:
+			print("转换失败")
+		else:
+			print("转换成功:", num)
+	输出：
+		转换成功: 100
+
+十、finally 总会执行
+	知识点：
+		finally 无论是否发生异常都会执行。
+		常用于释放资源，例如关闭文件、断开连接、清理临时状态。
+	代码：
+		try:
+			print("开始")
+			print(10 / 0)
+		except ZeroDivisionError:
+			print("处理异常")
+		finally:
+			print("清理完成")
+	输出：
+		开始
+		处理异常
+		清理完成
+
+十一、完整异常处理结构
+	知识点：
+		try：尝试执行可能出错的代码。
+		except：发生异常时处理。
+		else：没有异常时执行。
+		finally：无论如何都执行。
+	代码：
+		try:
+			num = int("8")
+			result = 16 / num
+		except ValueError:
+			print("不是整数")
+		except ZeroDivisionError:
+			print("不能除以 0")
+		else:
+			print("结果:", result)
+		finally:
+			print("结束")
+	输出：
+		结果: 2.0
+		结束
+
+十二、异常会从函数内部传出来
+	知识点：
+		如果 try 中调用的函数内部出错，外层 except 也可以捕获。
+		这说明异常会沿着函数调用链向外传递。
+	代码：
+		def test():
+			return 1 / 0
+
+		try:
+			test()
+		except ZeroDivisionError:
+			print("函数内部出错")
+	输出：
+		函数内部出错
+
+十三、raise 主动抛出异常
+	知识点：
+		raise 用于主动抛出异常。
+		当程序发现数据不符合要求时，可以用 raise 告诉调用者这里有问题。
+	代码：
+		try:
+			age = -1
+			if age < 0:
+				raise ValueError("年龄不能小于 0")
+		except ValueError as e:
+			print(e)
+	输出：
+		年龄不能小于 0
+
+十四、单独 raise 重新抛出异常
+	知识点：
+		在 except 中单独写 raise，可以重新抛出当前异常。
+		常用于先处理一部分，例如打印日志，然后交给外层继续处理。
+	代码：
+		try:
+			try:
+				raise NameError("HiThere")
+			except NameError:
+				print("内层先处理")
+				raise
+		except NameError as e:
+			print("外层继续处理:", e)
+	输出：
+		内层先处理
+		外层继续处理: HiThere
+
+十五、assert 断言
+	知识点：
+		assert 用于判断条件是否成立。
+		如果条件为 False，会触发 AssertionError。
+		常用于调试和检查程序内部条件。
+	代码：
+		try:
+			score = 120
+			assert 0 <= score <= 100, "分数必须在 0 到 100 之间"
+		except AssertionError as e:
+			print(e)
+	输出：
+		分数必须在 0 到 100 之间
+
+十六、自定义异常
+	知识点：
+		可以继承 Exception 创建自己的异常类。
+		自定义异常适合表达业务中的特殊错误。
+		异常类名称通常以 Error 结尾。
+	代码：
+		class MyError(Exception):
+			pass
+
+		try:
+			raise MyError("这是自定义异常")
+		except MyError as e:
+			print(e)
+	输出：
+		这是自定义异常
+
+十七、自定义异常保存信息
+	知识点：
+		自定义异常可以定义 __init__() 保存更多错误信息。
+		捕获异常后，可以通过异常对象读取这些信息。
+	代码：
+		class InputError(Exception):
+			def __init__(self, expression, message):
+				self.expression = expression
+				self.message = message
+
+		try:
+			raise InputError("age = -1", "年龄不能为负数")
+		except InputError as e:
+			print(e.expression)
+			print(e.message)
+	输出：
+		age = -1
+		年龄不能为负数
+
+十八、with 自动清理资源
+	知识点：
+		with 可以自动管理资源。
+		文件操作推荐使用 with open()，代码块结束后文件会自动关闭。
+		即使中途发生异常，也会执行关闭操作。
+	代码：
+		with open("demo.txt", "w", encoding="utf-8") as f:
+			f.write("Python")
+
+		print(f.closed)
+	输出：
+		True
+
+十九、异常调用栈 Traceback
+	知识点：
+		如果异常没有被捕获，Python 会显示 traceback。
+		traceback 会告诉你错误从哪一行开始传递，最后在哪里导致程序停止。
+		阅读报错时，重点看最后一行的异常类型和错误信息。
+	代码：
+		def a():
+			b()
+
+		def b():
+			raise ValueError("演示错误")
+
+		try:
+			a()
+		except ValueError as e:
+			print(type(e).__name__)
+			print(e)
+	输出：
+		ValueError
+		演示错误
+
+二十、异常处理速查
+	知识点：
+		基本结构：
+			try:
+				可能出错的代码
+			except SomeError:
+				处理异常
+		获取异常对象：
+			except SomeError as e:
+		多个异常同一处理：
+			except (ValueError, TypeError):
+		没有异常时执行：
+			else:
+		总会执行：
+			finally:
+		主动抛出异常：
+			raise ValueError("错误说明")
+		重新抛出异常：
+			raise
+
+总结
+	本章节的重点可以概括为：
+	1. SyntaxError 是语法错误，Exception 是运行时异常。
+	2. try/except 用于捕获并处理异常。
+	3. 推荐捕获具体异常，不要滥用空 except。
+	4. except 异常类型 as e 可以获取异常对象。
+	5. else 只在没有异常时执行。
+	6. finally 无论是否异常都会执行，常用于清理资源。
+	7. raise 可以主动抛出异常，单独 raise 可以重新抛出当前异常。
+	8. assert 条件不成立时会触发 AssertionError。
+	9. 自定义异常需要继承 Exception，类名通常以 Error 结尾。
+	10. 文件操作推荐使用 with open() 自动关闭文件。
+
+整体来看，这篇教程的核心是：读懂报错，捕获可预料的异常，用 else 表示成功逻辑，用 finally 或 with 做清理，用 raise 和自定义异常表达自己的错误规则。初学阶段重点掌握 try/except、except as e、else、finally、raise 和 with open()。
